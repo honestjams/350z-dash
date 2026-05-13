@@ -1,0 +1,47 @@
+# =====================================================================
+# 350Z DASH CONFIG
+# Edit this file to change behaviour without touching code.
+# =====================================================================
+
+server:
+  # Bind address. 127.0.0.1 = local only (safer, default).
+  # Use 0.0.0.0 to access dash from your phone/laptop on the same network.
+  host: "127.0.0.1"
+
+  # HTTP port serves the dashboard UI.
+  http_port: 8080
+
+  # WebSocket pushes live data to the UI. Same port, different path (/ws).
+  ws_path: "/ws"
+
+  # How often to push updates to the browser (Hz).
+  # Consult-II maxes out around 10-20Hz aggregate, so 15 is a good default.
+  update_rate_hz: 15
+
+serial:
+  # Set to a specific port to skip auto-detect (e.g. "/dev/ttyUSB0" or "COM3").
+  # Leave as null for auto-detect of any USB-serial adapter.
+  port: null
+
+  # Baud rate. Consult-II runs at 9600.
+  baud: 9600
+
+  # How long to wait for ECU handshake before giving up (seconds).
+  handshake_timeout: 3.0
+
+  # Time between register read frames (seconds). 0.05 = 20Hz target.
+  poll_interval: 0.05
+
+mode:
+  # "auto"      = try real ECU first, fall back to simulator if no cable
+  # "simulator" = force simulator (laptop dev)
+  # "consult"   = force real ECU only (fail if no cable)
+  default: "auto"
+
+logging:
+  # DEBUG | INFO | WARNING | ERROR
+  level: "INFO"
+
+  # Optional: log all decoded values to a CSV for later analysis.
+  # Set to null to disable.
+  csv_path: null

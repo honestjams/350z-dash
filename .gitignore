@@ -1,0 +1,30 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Logs / runtime
+*.log
+*.csv
+telemetry-*.csv
+
+# OS
+.DS_Store
+Thumbs.db
+.directory
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.claude/
+
+# Local config overrides (in case you want to tweak without committing)
+config.local.yaml

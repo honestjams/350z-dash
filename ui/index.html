@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=800, initial-scale=1">
+<title>350Z.DGN // CONSULT-II // VQ35DE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Major+Mono+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #000300;
+    --bg-0: #000800;
+    --bg-1: #001200;
+    --bg-2: #002000;
+    --bg-3: #003200;
+
+    --phos: #5cff85;          /* primary phosphor green (brighter) */
+    --phos-bright: #d6ffe1;   /* hot phosphor (highlights) */
+    --phos-mid: #2bcc52;      /* mid green */
+    --phos-dim: #178a30;      /* dim green (traces) — lifted */
+    --phos-vdim: #0a3d16;     /* very dim (grid lines) — lifted */
+    --phos-faint: #061a0a;    /* off-state */
+
+    --amber: #ffc233;         /* warn (dual-phosphor amber) */
+    --amber-dim: #884d00;
+    --red: #ff3a1c;           /* alert */
+    --red-dim: #6a1100;
+
+    --glow-sm: 0 0 2px var(--phos);
+    --glow-md: 0 0 3px var(--phos), 0 0 8px var(--phos-mid);
+    --glow-lg: 0 0 4px var(--phos-bright), 0 0 10px var(--phos);
+    --glow-amber: 0 0 3px var(--amber), 0 0 8px var(--amber);
+    --glow-red: 0 0 4px var(--red), 0 0 10px var(--red);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-deep);
+    color: var(--phos);
+    font-family: 'Share Tech Mono', monospace;
+    user-select: none;
+    -webkit-font-smoothing: none;
+  }
+
+  /* ===== CRT BACKGROUND EFFECTS ===== */
+  /* Phosphor vignette + soft inner glow */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(43, 255, 94, 0.04), transparent 50%),
+      radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  /* Scanlines (softer — fewer dark bands) */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0) 0px,
+      rgba(0, 0, 0, 0) 3px,
+      rgba(0, 0, 0, 0.18) 4px,
+      rgba(0, 0, 0, 0.18) 4px
+    );
+    pointer-events: none;
+    z-index: 90;
+    mix-blend-mode: multiply;
+  }
+
+  /* Horizontal CRT refresh sweep — slow, faint */
+  .crt-sweep {
+    position: fixed;
+    left: 0; right: 0;
+    height: 160px;
+    background: linear-gradient(180deg, transparent, rgba(92, 255, 133, 0.02) 50%, transparent);
+    pointer-events: none;
+    z-index: 80;
+    animation: crt-roll 11s linear infinite;
+  }
+
+  @keyframes crt-roll {
+    0% { top: -160px; }
+    100% { top: 100%; }
+  }
+
+  /* Phosphor "burn-in" trace lines — character grid hint */
+  body {
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(43, 255, 94, 0.03), transparent 60%),
+      var(--bg-deep);
+  }
+
+  /* ===== LAYOUT ===== */
+  .dash-wrap {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    /* CRT screen curvature illusion */
+    perspective: 800px;
+  }
+
+  .dash {
+    position: relative;
+    width: 800px;
+    height: 480px;
+    display: grid;
+    grid-template-rows: 36px 1fr 80px;
+    grid-template-columns: 1fr;
+    z-index: 1;
+    /* No global text-shadow — applied per element so numbers stay crisp */
+    transform: rotateX(0.5deg);
+  }
+
+  /* ===== HEADER ===== */
+  .hdr {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--phos-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(43, 255, 94, 0.04), transparent);
+  }
+
+  .hdr-left {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    color: var(--phos);
+  }
+
+  .hdr-left .pill {
+    border: 1px solid var(--phos-mid);
+    padding: 1px 6px;
+    color: var(--phos-bright);
+    background: rgba(43, 255, 94, 0.08);
+  }
+
+  .hdr-title {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+  }
+
+  .hdr-title .sep { color: var(--phos-dim); }
+  .hdr-title .ver { color: var(--phos-mid); }
+
+  .hdr-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: var(--phos-mid);
+    font-size: 11px;
+  }
+
+  .hdr-right .live {
+    color: var(--phos-bright);
+    text-shadow: var(--glow-md);
+  }
+
+  .blink::after {
+    content: '_';
+    animation: caret 1s steps(2) infinite;
+    color: var(--phos-bright);
+  }
+
+  @keyframes caret {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
+
+  /* Warn pills (subhdr) */
+  .warn-bar {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 6px;
+    padding: 4px 12px;
+    border-bottom: 1px solid var(--phos-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    background: rgba(4, 18, 8, 0.6);
+  }
+
+  .warn-bar .lbl { color: var(--phos-mid); margin-right: 4px; }
+
+  .warn {
+    padding: 0 6px;
+    border: 1px solid var(--phos-dim);
+    color: var(--phos-dim);
+    background: transparent;
+    transition: all 0.1s;
+  }
+
+  .warn.on {
+    border-color: var(--amber);
+    color: var(--amber);
+    background: rgba(255, 176, 0, 0.1);
+    text-shadow: var(--glow-amber);
+  }
+
+  .warn.danger {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(255, 34, 0, 0.18);
+    text-shadow: var(--glow-red);
+    animation: alarm 0.4s steps(2) infinite;
+  }
+
+  @keyframes alarm {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  /* ===== MAIN GRID ===== */
+  .main {
+    display: grid;
+    grid-template-columns: 178px 1fr 178px;
+    gap: 4px;
+    padding: 4px;
+    overflow: hidden;
+    border-bottom: 1px solid var(--phos-dim);
+  }
+
+  .col { display: flex; flex-direction: column; gap: 4px; }
+
+  /* ===== PANEL ===== */
+  .panel {
+    position: relative;
+    background: rgba(8, 26, 12, 0.7);
+    border: 1px solid var(--phos-mid);
+    padding: 4px 6px 6px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ASCII-style bracket corners */
+  .panel::before, .panel::after {
+    content: '';
+    position: absolute;
+    width: 8px; height: 8px;
+    border-color: var(--phos);
+    border-style: solid;
+    border-width: 0;
+  }
+
+  .panel::before {
+    top: -1px; left: -1px;
+    border-top-width: 1px; border-left-width: 1px;
+  }
+
+  .panel::after {
+    bottom: -1px; right: -1px;
+    border-bottom-width: 1px; border-right-width: 1px;
+  }
+
+  .p-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--phos);
+    margin-bottom: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .p-label .meta {
+    color: var(--phos-mid);
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+
+  /* ===== ASCII BAR GAUGES (left/right cols) ===== */
+  .ascii-gauge {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+  }
+
+  .ascii-val {
+    font-family: 'VT323', monospace;
+    font-size: 36px;
+    color: var(--phos-bright);
+    text-shadow: 0 0 1px var(--phos-bright), 0 0 4px var(--phos);
+    line-height: 0.9;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .ascii-val .unit {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--phos-mid);
+    text-shadow: var(--glow-sm);
+    letter-spacing: 1px;
+  }
+
+  .ascii-val.warn { color: var(--amber); text-shadow: var(--glow-amber); }
+  .ascii-val.danger { color: var(--red); text-shadow: var(--glow-red); }
+
+  .ascii-bar {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    line-height: 1;
+    letter-spacing: 0;
+    color: var(--phos);
+    text-shadow: 0 0 2px var(--phos);
+    white-space: nowrap;
+    overflow: hidden;
+    margin-top: 3px;
+  }
+
+  .ascii-bar .dim { color: var(--phos-dim); text-shadow: none; }
+  .ascii-bar .warn { color: var(--amber); text-shadow: var(--glow-amber); }
+  .ascii-bar .danger { color: var(--red); text-shadow: var(--glow-red); }
+
+  .ascii-range {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--phos-dim);
+    margin-top: 2px;
+  }
+
+  /* ===== CENTER TACH ===== */
+  .center {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: 4px;
+    padding: 2px;
+    position: relative;
+  }
+
+  .tach-wrap {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .tach-wrap svg {
+    width: 100%;
+    height: 100%;
+    max-width: 380px;
+    max-height: 270px;
+    overflow: visible;
+  }
+
+  .tach-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .tach-rpm {
+    font-family: 'VT323', monospace;
+    font-size: 30px;
+    color: var(--phos-bright);
+    text-shadow: var(--glow-md);
+    line-height: 1;
+    letter-spacing: 2px;
+  }
+
+  .tach-rpm-lbl {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--phos-mid);
+    letter-spacing: 3px;
+    margin-top: -4px;
+  }
+
+  .gear-big {
+    font-family: 'VT323', monospace;
+    font-size: 86px;
+    line-height: 0.85;
+    color: var(--phos-bright);
+    text-shadow:
+      0 0 2px var(--phos-bright),
+      0 0 8px var(--phos),
+      0 0 18px var(--phos-mid);
+    margin-top: 4px;
+  }
+
+  .gear-big.redline {
+    color: var(--red);
+    text-shadow:
+      0 0 2px var(--red),
+      0 0 10px var(--red);
+    animation: gear-pulse 0.4s ease-in-out infinite;
+  }
+
+  @keyframes gear-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.75; }
+  }
+
+  .gear-lbl {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--phos-mid);
+    letter-spacing: 4px;
+    margin-top: -8px;
+  }
+
+  /* Speed strip */
+  .speed-strip {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 8px;
+    align-items: center;
+    background: rgba(8, 26, 12, 0.7);
+    border: 1px solid var(--phos-mid);
+    padding: 4px 10px;
+    position: relative;
+  }
+
+  .speed-strip::before, .speed-strip::after {
+    content: '';
+    position: absolute;
+    width: 6px; height: 6px;
+    border: 1px solid var(--phos);
+    border-bottom: 0; border-right: 0;
+  }
+
+  .speed-strip::before { top: -1px; left: -1px; }
+  .speed-strip::after { bottom: -1px; right: -1px; border: 1px solid var(--phos); border-top: 0; border-left: 0; }
+
+  .speed-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    line-height: 1.15;
+  }
+
+  .speed-meta .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .speed-meta .lbl { color: var(--phos-mid); letter-spacing: 1px; }
+  .speed-meta .val { color: var(--phos-bright); text-shadow: 0 0 1px var(--phos-bright); }
+
+  .speed-big {
+    font-family: 'VT323', monospace;
+    font-size: 56px;
+    line-height: 0.9;
+    color: var(--phos-bright);
+    text-shadow: 0 0 1px var(--phos-bright), 0 0 5px var(--phos);
+    text-align: center;
+    letter-spacing: 2px;
+  }
+
+  .speed-unit {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--phos-mid);
+    letter-spacing: 3px;
+    text-align: center;
+    margin-top: -4px;
+  }
+
+  /* Shift-light strip */
+  .shift-strip {
+    position: absolute;
+    top: 6px;
+    left: 4px;
+    right: 4px;
+    height: 8px;
+    display: flex;
+    gap: 2px;
+    z-index: 2;
+  }
+
+  .shift-seg {
+    flex: 1;
+    border: 1px solid var(--phos-vdim);
+    background: transparent;
+    transition: all 0.05s;
+  }
+
+  .shift-seg.on { background: var(--phos); border-color: var(--phos); box-shadow: 0 0 4px var(--phos); }
+  .shift-seg.on.warn { background: var(--amber); border-color: var(--amber); box-shadow: 0 0 4px var(--amber); }
+  .shift-seg.on.danger { background: var(--red); border-color: var(--red); box-shadow: 0 0 6px var(--red); }
+
+  /* Crosshair overlay (occasional scan animation) */
+  .scan-reticle {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 5;
+  }
+
+  .scan-reticle.show { opacity: 0.7; }
+
+  /* ===== FOOTER ===== */
+  .ftr {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    padding: 4px 8px;
+    gap: 3px;
+    background: rgba(0, 8, 0, 0.6);
+    overflow: hidden;
+  }
+
+  .ftr-row1 {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .tps-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .tps-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--phos-mid);
+    letter-spacing: 1px;
+  }
+
+  .tps-head .v {
+    color: var(--phos-bright);
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    text-shadow: var(--glow-sm);
+  }
+
+  .tps-bar {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    line-height: 1;
+    color: var(--phos);
+    text-shadow: 0 0 2px var(--phos);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .tps-bar .dim { color: var(--phos-dim); text-shadow: none; }
+  .tps-bar .warn { color: var(--amber); text-shadow: var(--glow-amber); }
+  .tps-bar .danger { color: var(--red); text-shadow: var(--glow-red); }
+
+  .mini-stat {
+    text-align: center;
+    border-left: 1px solid var(--phos-vdim);
+    padding-left: 8px;
+  }
+
+  .mini-stat .l {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--phos-mid);
+    letter-spacing: 1px;
+  }
+
+  .mini-stat .v {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--phos-bright);
+    text-shadow: 0 0 1px var(--phos-bright), 0 0 3px var(--phos);
+    line-height: 1;
+  }
+
+  .mini-stat .u {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8px;
+    color: var(--phos-mid);
+  }
+
+  /* Hex stream log */
+  .hex-log {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--phos-dim);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-shadow: 0 0 2px var(--phos-dim);
+    padding-top: 2px;
+    border-top: 1px solid var(--phos-vdim);
+  }
+
+  .hex-log .hi { color: var(--phos-mid); }
+  .hex-log .alert { color: var(--amber); }
+
+  /* ===== ARC GAUGES (small panels) ===== */
+  .arc-mini {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+    min-height: 0;
+  }
+
+  .arc-mini svg {
+    width: 100%;
+    max-height: 60px;
+    overflow: visible;
+  }
+
+  .arc-mini .v {
+    font-family: 'VT323', monospace;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--phos-bright);
+    text-shadow: 0 0 1px var(--phos-bright), 0 0 4px var(--phos);
+    margin-top: -12px;
+  }
+
+  .arc-mini .u {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--phos-mid);
+    letter-spacing: 1px;
+  }
+
+  /* ===== SIM PANEL ===== */
+  .sim {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    width: 240px;
+    background: rgba(0, 12, 0, 0.95);
+    border: 1px solid var(--phos);
+    padding: 10px;
+    z-index: 200;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--phos);
+    box-shadow: 0 0 20px rgba(43, 255, 94, 0.3);
+    transition: transform 0.3s;
+    text-shadow: var(--glow-sm);
+  }
+
+  .sim.hidden { transform: translateX(260px); }
+
+  .sim-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--phos-bright);
+    border-bottom: 1px solid var(--phos-dim);
+    padding-bottom: 4px;
+  }
+
+  .sim-toggle {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 201;
+    background: var(--bg-1);
+    border: 1px solid var(--phos);
+    color: var(--phos-bright);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 6px 10px;
+    cursor: pointer;
+    text-shadow: var(--glow-sm);
+    box-shadow: 0 0 8px rgba(43, 255, 94, 0.3);
+  }
+
+  .sim label {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 10px;
+    margin: 6px 0 2px;
+    color: var(--phos-mid);
+    letter-spacing: 1px;
+  }
+
+  .sim label span { color: var(--phos-bright); }
+
+  .sim input[type="range"] {
+    width: 100%;
+    appearance: none;
+    height: 4px;
+    background: var(--phos-vdim);
+    outline: none;
+  }
+
+  .sim input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 10px;
+    height: 14px;
+    background: var(--phos-bright);
+    cursor: pointer;
+    box-shadow: 0 0 6px var(--phos);
+  }
+
+  .mode-btns {
+    display: flex;
+    gap: 4px;
+    margin-top: 10px;
+  }
+
+  .sim button.mode {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--phos-dim);
+    color: var(--phos-mid);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 5px 3px;
+    cursor: pointer;
+    text-shadow: var(--glow-sm);
+  }
+
+  .sim button.mode.active {
+    background: rgba(43, 255, 94, 0.15);
+    color: var(--phos-bright);
+    border-color: var(--phos);
+    box-shadow: 0 0 6px var(--phos-mid);
+  }
+
+  /* ===== BOOT SEQUENCE ===== */
+  .boot {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-deep);
+    z-index: 999;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    color: var(--phos);
+    text-shadow: var(--glow-sm);
+    padding: 40px 60px;
+    overflow: hidden;
+    transition: opacity 0.6s;
+  }
+
+  .boot.done { opacity: 0; pointer-events: none; }
+
+  .boot pre { line-height: 1.4; white-space: pre-wrap; }
+
+  .boot .ok { color: var(--phos-bright); }
+  .boot .warn { color: var(--amber); }
+  .boot .dim { color: var(--phos-dim); }
+
+  /* fade-in animations after boot */
+  @keyframes phos-in {
+    0% { opacity: 0; filter: blur(4px); }
+    100% { opacity: 1; filter: blur(0); }
+  }
+
+  .dash > * { animation: phos-in 0.5s ease-out backwards; }
+  .hdr { animation-delay: 0.1s; }
+  .main { animation-delay: 0.3s; }
+  .ftr { animation-delay: 0.5s; }
+</style>
+</head>
+<body>
+
+<!-- CRT effect layers -->
+<div class="crt-sweep"></div>
+
+<!-- Boot sequence overlay -->
+<div class="boot" id="boot">
+<pre id="boot-text"></pre>
+</div>
+
+<button class="sim-toggle" onclick="document.querySelector('.sim').classList.toggle('hidden')">[ SIM ]</button>
+
+<div class="dash-wrap">
+  <div class="dash" id="dash">
+
+    <!-- ===== HEADER ===== -->
+    <div class="hdr">
+      <div class="hdr-left">
+        <span class="pill">SYS-OK</span>
+        <span id="proc-id">PROC::0x4A8B</span>
+      </div>
+
+      <div class="hdr-title">
+        <span>350Z.DGN</span>
+        <span class="sep">//</span>
+        <span class="ver">v2.6</span>
+        <span class="sep">//</span>
+        <span>CONSULT-II</span>
+        <span class="sep">//</span>
+        <span>VQ35DE</span>
+      </div>
+
+      <div class="hdr-right">
+        <span id="time">00:00:00</span>
+        <span class="sep">│</span>
+        <span class="live blink" id="link-status">LINK</span>
+      </div>
+    </div>
+
+    <!-- WARN BAR -->
+    <div class="warn-bar">
+      <span class="lbl">[ALERT.BUS]</span>
+      <span class="warn" id="w-eng">ENG</span>
+      <span class="warn" id="w-oil">OIL</span>
+      <span class="warn" id="w-tmp">TEMP</span>
+      <span class="warn" id="w-bat">BAT</span>
+      <span class="warn" id="w-abs">ABS</span>
+      <span class="warn" id="w-knk">KNOCK</span>
+      <span style="margin-left:auto; color:var(--phos-dim);" id="sn">SN:#A4B9-7733</span>
+    </div>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+
+      <!-- LEFT COL -->
+      <div class="col">
+
+        <div class="panel">
+          <div class="p-label">
+            <span>COOLANT</span>
+            <span class="meta">REG.0x08</span>
+          </div>
+          <div class="ascii-gauge">
+            <div class="ascii-val" id="coolant-v">082<span class="unit">°C</span></div>
+            <div>
+              <div class="ascii-bar" id="coolant-bar"></div>
+              <div class="ascii-range"><span>40</span><span>95</span><span>125</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="p-label">
+            <span>OIL.PSI</span>
+            <span class="meta">EXT.SENS</span>
+          </div>
+          <div class="arc-mini">
+            <svg viewBox="0 0 120 70">
+              <!-- Ticks -->
+              <g id="oil-ticks"></g>
+              <!-- Outer arc -->
+              <path d="M 15 60 A 45 45 0 0 1 105 60" fill="none" stroke="#178a30" stroke-width="1" opacity="0.6"/>
+              <!-- Active arc made of segments -->
+              <g id="oil-arc-segs"></g>
+              <!-- Needle -->
+              <g id="oil-needle" style="transform-origin: 60px 60px; transform: rotate(-90deg); transition: transform 0.15s;">
+                <line x1="60" y1="60" x2="60" y2="22" stroke="#d6ffe1" stroke-width="1.5" filter="drop-shadow(0 0 3px #5cff85)"/>
+                <circle cx="60" cy="60" r="3" fill="#d6ffe1" filter="drop-shadow(0 0 3px #5cff85)"/>
+              </g>
+            </svg>
+            <div class="v" id="oil-v">5.2</div>
+            <div class="u">BAR</div>
+          </div>
+        </div>
+
+        <div class="panel" style="flex: 0 0 auto;">
+          <div class="p-label">
+            <span>AFR</span>
+            <span class="meta">O2.NB</span>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:8px;">
+            <div class="ascii-val" id="afr-v" style="font-size: 28px;">14.7</div>
+            <div style="font-family:'Share Tech Mono'; font-size:9px; color:var(--phos-dim);" id="afr-state">STOICH</div>
+          </div>
+          <div class="ascii-bar" id="afr-bar" style="margin-top:1px;"></div>
+        </div>
+
+      </div>
+
+      <!-- CENTER COL -->
+      <div class="col center">
+
+        <div class="shift-strip" id="shift-strip"></div>
+
+        <div class="tach-wrap" id="tach-wrap">
+          <svg viewBox="0 0 400 270">
+            <defs>
+              <filter id="phos-glow">
+                <feGaussianBlur stdDeviation="0.6"/>
+                <feMerge>
+                  <feMergeNode/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+              <filter id="phos-glow-strong">
+                <feGaussianBlur stdDeviation="1.5"/>
+                <feMerge>
+                  <feMergeNode/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- Outer wireframe ring -->
+            <circle cx="200" cy="155" r="125" fill="none" stroke="#178a30" stroke-width="0.5" opacity="0.7"/>
+            <circle cx="200" cy="155" r="120" fill="none" stroke="#178a30" stroke-width="0.5" opacity="0.4"/>
+
+            <!-- Outer angular brackets -->
+            <g stroke="#5cff85" stroke-width="1" fill="none" filter="url(#phos-glow)">
+              <path d="M 60 195 L 50 195 L 50 205"/>
+              <path d="M 340 195 L 350 195 L 350 205"/>
+              <path d="M 195 30 L 195 20 L 205 20 L 205 30"/>
+            </g>
+
+            <!-- Tick marks -->
+            <g id="tach-ticks"></g>
+            <g id="tach-labels"></g>
+
+            <!-- Background semicircle (dim) -->
+            <path d="M 80 225 A 120 120 0 1 1 320 225" fill="none" stroke="#0a3d16" stroke-width="10"/>
+
+            <!-- Discrete segment fill (built in JS) -->
+            <g id="tach-segs"></g>
+
+            <!-- Redline marker -->
+            <path d="M 290 205 A 120 120 0 0 1 320 225" fill="none" stroke="#ff3a1c" stroke-width="2" opacity="0.7" filter="url(#phos-glow)"/>
+
+            <!-- Needle -->
+            <g id="tach-needle" style="transform-origin: 200px 155px; transform: rotate(-130deg); transition: transform 0.08s cubic-bezier(0.4, 0, 0.2, 1);">
+              <line x1="200" y1="155" x2="200" y2="45" stroke="#d6ffe1" stroke-width="2" filter="url(#phos-glow-strong)"/>
+              <line x1="200" y1="155" x2="200" y2="170" stroke="#d6ffe1" stroke-width="2"/>
+              <circle cx="200" cy="45" r="3" fill="#d6ffe1" filter="url(#phos-glow-strong)"/>
+            </g>
+
+            <!-- Center hub -->
+            <circle cx="200" cy="155" r="14" fill="#001200" stroke="#5cff85" stroke-width="1" filter="url(#phos-glow)"/>
+            <circle cx="200" cy="155" r="4" fill="#d6ffe1" filter="url(#phos-glow-strong)"/>
+
+            <!-- Label -->
+            <text x="200" y="248" text-anchor="middle" fill="#2bcc52" font-family="Share Tech Mono" font-size="9" letter-spacing="3">RPM x 1000</text>
+          </svg>
+
+          <div class="tach-center" style="margin-top: 56px;">
+            <div class="gear-big" id="gear">N</div>
+            <div class="gear-lbl">GEAR</div>
+          </div>
+
+          <!-- Scan reticle overlay -->
+          <svg class="scan-reticle" id="reticle" viewBox="0 0 60 60">
+            <g stroke="#d6ffe1" stroke-width="1" fill="none" filter="drop-shadow(0 0 3px #5cff85)">
+              <path d="M 30 5 L 30 18 M 30 42 L 30 55 M 5 30 L 18 30 M 42 30 L 55 30"/>
+              <path d="M 5 5 L 5 12 L 12 12 M 48 12 L 55 12 L 55 5 M 5 55 L 5 48 L 12 48 M 48 48 L 55 48 L 55 55"/>
+              <circle cx="30" cy="30" r="3"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="speed-strip">
+          <div class="speed-meta">
+            <div class="row"><span class="lbl">0-100</span><span class="val" id="t-060">--.--</span></div>
+            <div class="row"><span class="lbl">PEAK</span><span class="val" id="peak">000</span></div>
+            <div class="row"><span class="lbl">N.m</span><span class="val" id="tq-est">---</span></div>
+          </div>
+
+          <div>
+            <div class="speed-big" id="speed">000</div>
+            <div class="speed-unit">km/h</div>
+          </div>
+
+          <div class="speed-meta" style="text-align:right;">
+            <div class="row"><span class="lbl">TRIP</span><span class="val" id="trip">0.0</span></div>
+            <div class="row"><span class="lbl">AVG</span><span class="val" id="avg">0</span></div>
+            <div class="row"><span class="lbl">DIST</span><span class="val" id="dist">0.00</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COL -->
+      <div class="col">
+
+        <div class="panel">
+          <div class="p-label">
+            <span>OIL.TMP</span>
+            <span class="meta">EXT.SENS</span>
+          </div>
+          <div class="ascii-gauge">
+            <div class="ascii-val" id="oiltemp-v">095<span class="unit">°C</span></div>
+            <div>
+              <div class="ascii-bar" id="oiltemp-bar"></div>
+              <div class="ascii-range"><span>40</span><span>115</span><span>145</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="p-label">
+            <span>MAP/BST</span>
+            <span class="meta">REG.0x0F</span>
+          </div>
+          <div class="arc-mini">
+            <svg viewBox="0 0 120 70">
+              <path d="M 15 60 A 45 45 0 0 1 105 60" fill="none" stroke="#178a30" stroke-width="1" opacity="0.6"/>
+              <g id="boost-arc-segs"></g>
+              <line x1="60" y1="60" x2="60" y2="14" stroke="#178a30" stroke-width="0.5" opacity="0.5"/>
+              <g id="boost-needle" style="transform-origin: 60px 60px; transform: rotate(0deg); transition: transform 0.15s;">
+                <line x1="60" y1="60" x2="60" y2="22" stroke="#d6ffe1" stroke-width="1.5" filter="drop-shadow(0 0 3px #5cff85)"/>
+                <circle cx="60" cy="60" r="3" fill="#d6ffe1" filter="drop-shadow(0 0 3px #5cff85)"/>
+              </g>
+              <text x="14" y="68" fill="#2bcc52" font-family="Share Tech Mono" font-size="7">-1.0</text>
+              <text x="100" y="68" fill="#2bcc52" font-family="Share Tech Mono" font-size="7">+1.0</text>
+            </svg>
+            <div class="v" id="boost-v">-0.4</div>
+            <div class="u">BAR</div>
+          </div>
+        </div>
+
+        <div class="panel" style="flex: 0 0 auto;">
+          <div class="p-label">
+            <span>BATT</span>
+            <span class="meta">REG.0x0C</span>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:8px;">
+            <div class="ascii-val" id="batt-v" style="font-size: 28px;">14.2<span class="unit">V</span></div>
+            <div style="font-family:'Share Tech Mono'; font-size:9px; color:var(--phos-dim);" id="batt-state">CHG.OK</div>
+          </div>
+          <div class="ascii-bar" id="batt-bar" style="margin-top:1px;"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="ftr">
+      <div class="ftr-row1">
+        <div class="tps-block">
+          <div class="tps-head">
+            <span>THROTTLE.POS</span>
+            <span class="v" id="tps-v">000%</span>
+          </div>
+          <div class="tps-bar" id="tps-bar"></div>
+        </div>
+
+        <div class="mini-stat">
+          <div class="l">IGN.ADV</div>
+          <div class="v" id="ign-v">14</div>
+          <div class="u">° BTDC</div>
+        </div>
+
+        <div class="mini-stat">
+          <div class="l">MAF.V</div>
+          <div class="v" id="maf-v">1.42</div>
+          <div class="u">VOLTS</div>
+        </div>
+
+        <div class="mini-stat">
+          <div class="l">INJ.PW</div>
+          <div class="v" id="inj-v">3.2</div>
+          <div class="u">MS</div>
+        </div>
+
+        <div class="mini-stat">
+          <div class="l">LOAD</div>
+          <div class="v" id="load-v">12</div>
+          <div class="u">%</div>
+        </div>
+      </div>
+
+      <div class="hex-log" id="hex-log">
+        <span class="hi">&gt;</span> RX.0xFF 0x4A 0x8B 0x20 0x0C 0x00 0x80 ...
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== SIM PANEL ===== -->
+<div class="sim hidden">
+  <div class="sim-head">
+    <span>// SIM.CTRL</span>
+    <span style="font-size:9px; color:var(--phos-mid);" id="sim-mode-label">DEMO.LAP</span>
+  </div>
+
+  <label>RPM <span id="s-rpm-v">800</span></label>
+  <input type="range" id="s-rpm" min="0" max="8000" value="800">
+
+  <label>SPEED <span id="s-speed-v">0</span></label>
+  <input type="range" id="s-speed" min="0" max="280" value="0">
+
+  <label>THROTTLE <span id="s-tps-v">0</span></label>
+  <input type="range" id="s-tps" min="0" max="100" value="0">
+
+  <label>COOLANT <span id="s-cool-v">82</span></label>
+  <input type="range" id="s-cool" min="40" max="125" value="82">
+
+  <label>OIL.TMP <span id="s-otmp-v">95</span></label>
+  <input type="range" id="s-otmp" min="40" max="145" value="95">
+
+  <label>OIL.PSI <span id="s-oilp-v">5.2</span></label>
+  <input type="range" id="s-oilp" min="0" max="80" value="52">
+
+  <label>AFR <span id="s-afr-v">14.7</span></label>
+  <input type="range" id="s-afr" min="100" max="180" value="147">
+
+  <label>BATT <span id="s-batt-v">14.2</span></label>
+  <input type="range" id="s-batt" min="100" max="150" value="142">
+
+  <label>MAP <span id="s-map-v">-0.4</span></label>
+  <input type="range" id="s-map" min="-10" max="10" value="-4">
+
+  <div class="mode-btns">
+    <button class="mode" data-mode="manual">MANUAL</button>
+    <button class="mode active" data-mode="demo">DEMO.LAP</button>
+    <button class="mode" data-mode="idle">IDLE</button>
+  </div>
+</div>
+
+<script>
+  // ===== CONFIG =====
+  const CFG = {
+    rpmMax: 8000,
+    rpmRedline: 6800,
+    tachStart: -130,
+    tachEnd: 130,
+    tachSegs: 40,        // discrete blocks around tach arc
+    shiftSegs: 24,
+    asciiBarWidth: 22,   // chars
+    tpsBarWidth: 60,
+    afrBarWidth: 22,
+    battBarWidth: 22,
+  };
+
+  // ===== DATA (Consult-II compatible model) =====
+  const data = {
+    rpm: 800,
+    speed: 0,
+    coolant: 82,
+    oilTemp: 95,
+    oilPressure: 5.2,
+    map: -0.4,
+    afr: 14.7,
+    battery: 14.2,
+    tps: 0,
+    ignAdv: 14,
+    maf: 1.42,
+    injPW: 3.2,
+    gear: 'N',
+  };
+
+  let mode = 'demo';
+  let demoTime = 0;
+  let peakSpeed = 0;
+  let tripDist = 0;
+  let totalDist = 0;
+  let zeroToHundredStart = null;
+  let zeroToHundredTime = null;
+  let lastUpdate = performance.now();
+
+  // ===== BOOT SEQUENCE =====
+  const bootLines = [
+    { t: '> CONSULT.SYS v2.6.1 boot...', cls: 'dim', delay: 60 },
+    { t: '> initializing K-LINE @ 9600 baud', cls: 'dim', delay: 80 },
+    { t: '> handshake ECU.................[<span class="ok">OK</span>]', cls: '', delay: 200 },
+    { t: '> identify part# 23710-CD040..[<span class="ok">OK</span>]', cls: '', delay: 80 },
+    { t: '> subscribe REG.0x00 RPM......[<span class="ok">OK</span>]', cls: 'dim', delay: 40 },
+    { t: '> subscribe REG.0x08 COOLANT..[<span class="ok">OK</span>]', cls: 'dim', delay: 40 },
+    { t: '> subscribe REG.0x0B VSP......[<span class="ok">OK</span>]', cls: 'dim', delay: 40 },
+    { t: '> subscribe REG.0x09 TPS......[<span class="ok">OK</span>]', cls: 'dim', delay: 40 },
+    { t: '> subscribe REG.0x18 IGN_ADV..[<span class="ok">OK</span>]', cls: 'dim', delay: 40 },
+    { t: '> subscribe AUX OIL.PSI.......[<span class="warn">EXT</span>]', cls: 'dim', delay: 60 },
+    { t: '> subscribe AUX OIL.TMP.......[<span class="warn">EXT</span>]', cls: 'dim', delay: 60 },
+    { t: '> DTC scan.....................[<span class="ok">CLEAR</span>]', cls: '', delay: 200 },
+    { t: '> launching dash interface...', cls: 'dim', delay: 300 },
+  ];
+
+  async function runBoot() {
+    const el = document.getElementById('boot-text');
+    for (const ln of bootLines) {
+      const line = document.createElement('div');
+      line.className = ln.cls;
+      line.innerHTML = ln.t;
+      el.appendChild(line);
+      await new Promise(r => setTimeout(r, ln.delay));
+    }
+    await new Promise(r => setTimeout(r, 300));
+    document.getElementById('boot').classList.add('done');
+  }
+
+  // ===== ASCII BAR BUILDER =====
+  function asciiBar(value, min, max, width, thresholds) {
+    const pct = Math.min(1, Math.max(0, (value - min) / (max - min)));
+    const filled = Math.round(pct * width);
+    let out = '';
+    for (let i = 0; i < width; i++) {
+      const segVal = min + (max - min) * (i / width);
+      if (i < filled) {
+        if (thresholds && segVal > thresholds[1]) out += `<span class="danger">█</span>`;
+        else if (thresholds && segVal > thresholds[0]) out += `<span class="warn">█</span>`;
+        else out += `█`;
+      } else {
+        out += `<span class="dim">░</span>`;
+      }
+    }
+    return out;
+  }
+
+  function bipolarBar(value, min, max, width) {
+    // Symmetric bar with center origin (for AFR around stoich, etc)
+    const center = Math.floor(width / 2);
+    const range = (max - min) / 2;
+    const mid = (max + min) / 2;
+    const offset = (value - mid) / range; // -1 to +1
+    const litCenter = Math.round(center + offset * center);
+    let out = '';
+    for (let i = 0; i < width; i++) {
+      if (i === litCenter) out += `█`;
+      else if (i === center) out += `<span class="dim">│</span>`;
+      else out += `<span class="dim">·</span>`;
+    }
+    return out;
+  }
+
+  // ===== BUILD STATIC SVG ELEMENTS =====
+  // Tach ticks
+  (function() {
+    const ticksG = document.getElementById('tach-ticks');
+    const labelsG = document.getElementById('tach-labels');
+    const cx = 200, cy = 155;
+    const r1 = 118, r2 = 110, r3 = 102, rLabel = 90;
+    let ticksHTML = '', labelsHTML = '';
+    for (let i = 0; i <= 8; i++) {
+      const t = i / 8;
+      const ang = (CFG.tachStart + (CFG.tachEnd - CFG.tachStart) * t) * Math.PI / 180;
+      const x1 = cx + Math.sin(ang) * r1;
+      const y1 = cy - Math.cos(ang) * r1;
+      const x2 = cx + Math.sin(ang) * r2;
+      const y2 = cy - Math.cos(ang) * r2;
+      const isRedline = i >= 7;
+      const color = isRedline ? '#ff3a1c' : '#5cff85';
+      ticksHTML += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="1.5" filter="url(#phos-glow)"/>`;
+
+      // minor ticks
+      if (i < 8) {
+        for (let m = 1; m < 5; m++) {
+          const mt = (i + m / 5) / 8;
+          const ma = (CFG.tachStart + (CFG.tachEnd - CFG.tachStart) * mt) * Math.PI / 180;
+          const mx1 = cx + Math.sin(ma) * r1;
+          const my1 = cy - Math.cos(ma) * r1;
+          const mx2 = cx + Math.sin(ma) * r3;
+          const my2 = cy - Math.cos(ma) * r3;
+          const mRed = mt > CFG.rpmRedline / CFG.rpmMax;
+          ticksHTML += `<line x1="${mx1}" y1="${my1}" x2="${mx2}" y2="${my2}" stroke="${mRed ? '#ff3a1c' : '#178a30'}" stroke-width="0.7" opacity="0.8"/>`;
+        }
+      }
+
+      const lx = cx + Math.sin(ang) * rLabel;
+      const ly = cy - Math.cos(ang) * rLabel + 4;
+      labelsHTML += `<text x="${lx}" y="${ly}" text-anchor="middle" fill="${isRedline ? '#ff3a1c' : '#d6ffe1'}" font-family="VT323" font-size="16" filter="url(#phos-glow)">${i}</text>`;
+    }
+    ticksG.innerHTML = ticksHTML;
+    labelsG.innerHTML = labelsHTML;
+
+    // Build discrete tach arc segments
+    const segsG = document.getElementById('tach-segs');
+    let segsHTML = '';
+    const rOuter = 124, rInner = 116;
+    for (let i = 0; i < CFG.tachSegs; i++) {
+      const t1 = i / CFG.tachSegs;
+      const t2 = (i + 0.85) / CFG.tachSegs;
+      const a1 = (CFG.tachStart + (CFG.tachEnd - CFG.tachStart) * t1) * Math.PI / 180;
+      const a2 = (CFG.tachStart + (CFG.tachEnd - CFG.tachStart) * t2) * Math.PI / 180;
+      const x1o = cx + Math.sin(a1) * rOuter, y1o = cy - Math.cos(a1) * rOuter;
+      const x2o = cx + Math.sin(a2) * rOuter, y2o = cy - Math.cos(a2) * rOuter;
+      const x1i = cx + Math.sin(a1) * rInner, y1i = cy - Math.cos(a1) * rInner;
+      const x2i = cx + Math.sin(a2) * rInner, y2i = cy - Math.cos(a2) * rInner;
+      segsHTML += `<path id="ts${i}" d="M ${x1o} ${y1o} A ${rOuter} ${rOuter} 0 0 1 ${x2o} ${y2o} L ${x2i} ${y2i} A ${rInner} ${rInner} 0 0 0 ${x1i} ${y1i} Z" fill="#0a3d16" stroke="none"/>`;
+    }
+    segsG.innerHTML = segsHTML;
+  })();
+
+  // Oil pressure ticks + arc segs
+  (function() {
+    const ticksG = document.getElementById('oil-ticks');
+    const cx = 60, cy = 60, r1 = 48, r2 = 40;
+    let html = '';
+    for (let i = 0; i <= 8; i++) {
+      const t = i / 8;
+      const ang = (-180 + 180 * t) * Math.PI / 180;
+      const x1 = cx + Math.cos(ang) * r1;
+      const y1 = cy + Math.sin(ang) * r1;
+      const x2 = cx + Math.cos(ang) * r2;
+      const y2 = cy + Math.sin(ang) * r2;
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${i === 0 ? '#ff3a1c' : '#2bcc52'}" stroke-width="${i % 2 === 0 ? 1 : 0.6}" opacity="0.8"/>`;
+    }
+    ticksG.innerHTML = html;
+
+    // arc segs
+    const segG = document.getElementById('oil-arc-segs');
+    let segHTML = '';
+    for (let i = 0; i < 18; i++) {
+      const t1 = i / 18, t2 = (i + 0.8) / 18;
+      const a1 = (-180 + 180 * t1) * Math.PI / 180;
+      const a2 = (-180 + 180 * t2) * Math.PI / 180;
+      const r_o = 50, r_i = 44;
+      const x1o = cx + Math.cos(a1) * r_o, y1o = cy + Math.sin(a1) * r_o;
+      const x2o = cx + Math.cos(a2) * r_o, y2o = cy + Math.sin(a2) * r_o;
+      const x1i = cx + Math.cos(a1) * r_i, y1i = cy + Math.sin(a1) * r_i;
+      const x2i = cx + Math.cos(a2) * r_i, y2i = cy + Math.sin(a2) * r_i;
+      segHTML += `<path id="os${i}" d="M ${x1o} ${y1o} A ${r_o} ${r_o} 0 0 1 ${x2o} ${y2o} L ${x2i} ${y2i} A ${r_i} ${r_i} 0 0 0 ${x1i} ${y1i} Z" fill="#0a3d16"/>`;
+    }
+    segG.innerHTML = segHTML;
+  })();
+
+  // Boost arc segs
+  (function() {
+    const segG = document.getElementById('boost-arc-segs');
+    const cx = 60, cy = 60;
+    let segHTML = '';
+    for (let i = 0; i < 18; i++) {
+      const t1 = i / 18, t2 = (i + 0.8) / 18;
+      const a1 = (-180 + 180 * t1) * Math.PI / 180;
+      const a2 = (-180 + 180 * t2) * Math.PI / 180;
+      const r_o = 50, r_i = 44;
+      const x1o = cx + Math.cos(a1) * r_o, y1o = cy + Math.sin(a1) * r_o;
+      const x2o = cx + Math.cos(a2) * r_o, y2o = cy + Math.sin(a2) * r_o;
+      const x1i = cx + Math.cos(a1) * r_i, y1i = cy + Math.sin(a1) * r_i;
+      const x2i = cx + Math.cos(a2) * r_i, y2i = cy + Math.sin(a2) * r_i;
+      segHTML += `<path id="bs${i}" d="M ${x1o} ${y1o} A ${r_o} ${r_o} 0 0 1 ${x2o} ${y2o} L ${x2i} ${y2i} A ${r_i} ${r_i} 0 0 0 ${x1i} ${y1i} Z" fill="#0a3d16"/>`;
+    }
+    segG.innerHTML = segHTML;
+  })();
+
+  // Shift strip segments
+  (function() {
+    const c = document.getElementById('shift-strip');
+    let html = '';
+    for (let i = 0; i < CFG.shiftSegs; i++) html += '<div class="shift-seg"></div>';
+    c.innerHTML = html;
+  })();
+
+  // ===== HEX LOG STREAM =====
+  function genHexPacket() {
+    const tokens = [];
+    // Add live register reads as faux hex
+    const regs = [
+      ['00', Math.round(data.rpm / 25) & 0xff],
+      ['08', Math.round(data.coolant + 50) & 0xff],
+      ['0B', Math.round(data.speed) & 0xff],
+      ['09', Math.round(data.tps * 2) & 0xff],
+      ['18', Math.round(data.ignAdv + 20) & 0xff],
+      ['0C', Math.round(data.battery * 10) & 0xff],
+      ['0D', Math.round(data.maf * 50) & 0xff],
+    ];
+    const reg = regs[Math.floor(Math.random() * regs.length)];
+    return `RX REG.0x${reg[0]} = 0x${reg[1].toString(16).padStart(2,'0').toUpperCase()}`;
+  }
+
+  let hexLines = [];
+  setInterval(() => {
+    hexLines.unshift(genHexPacket());
+    if (hexLines.length > 4) hexLines.pop();
+    const log = document.getElementById('hex-log');
+    log.innerHTML = '<span class="hi">&gt;</span> ' + hexLines.map((l, i) => {
+      if (i === 0) return `<span class="hi">${l}</span>`;
+      return `<span style="opacity:${0.7 - i * 0.18}">${l}</span>`;
+    }).join('  ');
+  }, 120);
+
+  // ===== SCAN RETICLE (occasional sweep) =====
+  function triggerScan() {
+    const ret = document.getElementById('reticle');
+    const wrap = document.getElementById('tach-wrap');
+    const rect = wrap.getBoundingClientRect();
+    const w = wrap.offsetWidth, h = wrap.offsetHeight;
+    // Pick a random target inside the wrap
+    const tx = 40 + Math.random() * (w - 100);
+    const ty = 30 + Math.random() * (h - 80);
+    ret.style.left = tx + 'px';
+    ret.style.top = ty + 'px';
+    ret.classList.add('show');
+    setTimeout(() => ret.classList.remove('show'), 600);
+  }
+
+  setInterval(() => {
+    if (Math.random() < 0.18) triggerScan();
+  }, 2400);
+
+  // ===== RENDER =====
+  function render() {
+    // === RPM / TACH ===
+    const rpmPct = Math.min(1, Math.max(0, data.rpm / CFG.rpmMax));
+    const tachAngle = CFG.tachStart + (CFG.tachEnd - CFG.tachStart) * rpmPct;
+    document.getElementById('tach-needle').style.transform = `rotate(${tachAngle}deg)`;
+
+    // tach segments
+    const litTachSegs = Math.round(rpmPct * CFG.tachSegs);
+    for (let i = 0; i < CFG.tachSegs; i++) {
+      const seg = document.getElementById(`ts${i}`);
+      const segPct = i / CFG.tachSegs;
+      if (i < litTachSegs) {
+        if (segPct > CFG.rpmRedline / CFG.rpmMax) {
+          seg.setAttribute('fill', '#ff3a1c');
+          seg.setAttribute('filter', 'url(#phos-glow)');
+        } else if (segPct > 0.78) {
+          seg.setAttribute('fill', '#ffc233');
+          seg.setAttribute('filter', 'url(#phos-glow)');
+        } else {
+          seg.setAttribute('fill', '#5cff85');
+          seg.setAttribute('filter', 'url(#phos-glow)');
+        }
+      } else {
+        seg.setAttribute('fill', '#0a3d16');
+        seg.setAttribute('filter', 'none');
+      }
+    }
+
+    // RPM number in tach (hidden behind gear; show instead below)
+    // shift strip
+    const shiftSegs = document.querySelectorAll('.shift-seg');
+    const litShift = Math.round(rpmPct * CFG.shiftSegs);
+    shiftSegs.forEach((s, i) => {
+      s.classList.remove('on', 'warn', 'danger');
+      if (i < litShift) {
+        s.classList.add('on');
+        if (i / CFG.shiftSegs > 0.85) s.classList.add('danger');
+        else if (i / CFG.shiftSegs > 0.72) s.classList.add('warn');
+      }
+    });
+
+    // === GEAR ===
+    const gearEl = document.getElementById('gear');
+    let gear = 'N';
+    if (data.speed > 2 && data.rpm > 1000) {
+      const ratio = data.speed / data.rpm * 1000;
+      const ratios = [9, 16, 23, 30, 38, 47];
+      let best = 0, diff = Infinity;
+      ratios.forEach((r, idx) => {
+        if (Math.abs(ratio - r) < diff) { diff = Math.abs(ratio - r); best = idx; }
+      });
+      gear = String(best + 1);
+    } else if (data.speed > 2) {
+      gear = '-';
+    }
+    gearEl.textContent = gear;
+    gearEl.classList.toggle('redline', data.rpm > CFG.rpmRedline);
+
+    // === SPEED ===
+    document.getElementById('speed').textContent = String(Math.round(data.speed)).padStart(3, '0');
+    if (data.speed > peakSpeed) peakSpeed = data.speed;
+    document.getElementById('peak').textContent = String(Math.round(peakSpeed)).padStart(3, '0');
+
+    // Torque estimate (very rough, NA VQ35DE peaks ~363 Nm)
+    const tqEst = data.rpm > 500 ? Math.round(280 + (data.tps / 100) * 80 - Math.abs(data.rpm - 4800) / 30) : 0;
+    document.getElementById('tq-est').textContent = tqEst > 0 ? String(tqEst).padStart(3, '0') : '---';
+
+    // === 0-100 ===
+    if (data.speed > 1 && zeroToHundredStart === null) {
+      zeroToHundredStart = performance.now();
+      zeroToHundredTime = null;
+    }
+    if (data.speed < 1) {
+      zeroToHundredStart = null;
+      zeroToHundredTime = null;
+    }
+    if (data.speed >= 100 && zeroToHundredStart && zeroToHundredTime === null) {
+      zeroToHundredTime = (performance.now() - zeroToHundredStart) / 1000;
+    }
+    if (zeroToHundredTime !== null) {
+      document.getElementById('t-060').textContent = zeroToHundredTime.toFixed(2) + 's';
+    } else if (zeroToHundredStart !== null) {
+      document.getElementById('t-060').textContent = ((performance.now() - zeroToHundredStart) / 1000).toFixed(2) + 's';
+    } else {
+      document.getElementById('t-060').textContent = '--.--';
+    }
+
+    // === COOLANT ===
+    const cv = document.getElementById('coolant-v');
+    cv.innerHTML = String(Math.round(data.coolant)).padStart(3, '0') + '<span class="unit">°C</span>';
+    cv.className = 'ascii-val' + (data.coolant > 105 ? ' danger' : data.coolant > 95 ? ' warn' : '');
+    document.getElementById('coolant-bar').innerHTML = asciiBar(data.coolant, 40, 125, CFG.asciiBarWidth, [95, 105]);
+
+    // === OIL TEMP ===
+    const otv = document.getElementById('oiltemp-v');
+    otv.innerHTML = String(Math.round(data.oilTemp)).padStart(3, '0') + '<span class="unit">°C</span>';
+    otv.className = 'ascii-val' + (data.oilTemp > 130 ? ' danger' : data.oilTemp > 115 ? ' warn' : '');
+    document.getElementById('oiltemp-bar').innerHTML = asciiBar(data.oilTemp, 40, 145, CFG.asciiBarWidth, [115, 130]);
+
+    // === OIL PRESS (gauge segments) ===
+    document.getElementById('oil-v').textContent = data.oilPressure.toFixed(1);
+    const oilPct = Math.min(1, data.oilPressure / 8);
+    const oilSegs = 18;
+    const litOil = Math.round(oilPct * oilSegs);
+    for (let i = 0; i < oilSegs; i++) {
+      const seg = document.getElementById(`os${i}`);
+      if (!seg) continue;
+      if (i < litOil) {
+        const color = i / oilSegs < 0.15 ? '#ff3a1c' : '#5cff85';
+        seg.setAttribute('fill', color);
+        seg.setAttribute('filter', 'url(#phos-glow)');
+      } else {
+        seg.setAttribute('fill', '#0a3d16');
+        seg.setAttribute('filter', 'none');
+      }
+    }
+    document.getElementById('oil-needle').style.transform = `rotate(${-90 + 180 * oilPct}deg)`;
+
+    // === MAP ===
+    document.getElementById('boost-v').textContent = (data.map >= 0 ? '+' : '') + data.map.toFixed(1);
+    const mapPct = (data.map + 1) / 2;
+    const litBoost = Math.round(mapPct * 18);
+    for (let i = 0; i < 18; i++) {
+      const seg = document.getElementById(`bs${i}`);
+      if (!seg) continue;
+      if (i < litBoost) {
+        const color = i >= 9 ? '#ffc233' : '#5cff85';
+        seg.setAttribute('fill', color);
+        seg.setAttribute('filter', 'url(#phos-glow)');
+      } else {
+        seg.setAttribute('fill', '#0a3d16');
+        seg.setAttribute('filter', 'none');
+      }
+    }
+    document.getElementById('boost-needle').style.transform = `rotate(${-90 + 180 * mapPct}deg)`;
+
+    // === AFR ===
+    document.getElementById('afr-v').textContent = data.afr.toFixed(1);
+    let afrState = 'STOICH';
+    if (data.afr < 13) afrState = 'RICH';
+    else if (data.afr < 14) afrState = 'PWR';
+    else if (data.afr > 15.5) afrState = 'LEAN';
+    document.getElementById('afr-state').textContent = afrState;
+    document.getElementById('afr-bar').innerHTML = bipolarBar(data.afr, 11, 18, CFG.afrBarWidth);
+
+    // === BATTERY ===
+    document.getElementById('batt-v').innerHTML = data.battery.toFixed(1) + '<span class="unit">V</span>';
+    let battState = 'CHG.OK';
+    if (data.battery < 12) battState = 'LOW';
+    else if (data.battery < 13) battState = 'LOW.CHG';
+    else if (data.battery > 14.8) battState = 'HIGH';
+    document.getElementById('batt-state').textContent = battState;
+    document.getElementById('batt-bar').innerHTML = asciiBar(data.battery, 11, 15, CFG.battBarWidth, [13.0, 14.8]);
+
+    // === THROTTLE ===
+    document.getElementById('tps-v').textContent = String(Math.round(data.tps)).padStart(3, '0') + '%';
+    document.getElementById('tps-bar').innerHTML = asciiBar(data.tps, 0, 100, CFG.tpsBarWidth, [70, 90]);
+
+    // === MISC ===
+    document.getElementById('ign-v').textContent = data.ignAdv.toFixed(0);
+    document.getElementById('maf-v').textContent = data.maf.toFixed(2);
+    document.getElementById('inj-v').textContent = data.injPW.toFixed(1);
+    // Engine load estimate
+    const loadPct = Math.round((data.maf / 4.5) * 100);
+    document.getElementById('load-v').textContent = String(Math.min(100, loadPct)).padStart(2, '0');
+
+    // === TRIP / DIST ===
+    document.getElementById('trip').textContent = tripDist.toFixed(1);
+    document.getElementById('dist').textContent = totalDist.toFixed(2);
+    const avg = totalDist / (demoTime / 3600 || 1);
+    document.getElementById('avg').textContent = String(Math.min(999, Math.round(avg))).padStart(3, '0');
+
+    // === WARNINGS ===
+    setWarn('w-eng', false);
+    setWarn('w-oil', data.oilPressure < 1.5 && data.rpm > 500, data.oilPressure < 0.5 && data.rpm > 500);
+    setWarn('w-tmp', data.coolant > 105, data.coolant > 115);
+    setWarn('w-bat', data.battery < 12.5 || data.battery > 14.9, data.battery < 11.5);
+    setWarn('w-abs', false);
+    setWarn('w-knk', false);
+
+    // === CLOCK ===
+    const now = new Date();
+    document.getElementById('time').textContent =
+      String(now.getHours()).padStart(2, '0') + ':' +
+      String(now.getMinutes()).padStart(2, '0') + ':' +
+      String(now.getSeconds()).padStart(2, '0');
+  }
+
+  function setWarn(id, on, danger) {
+    const el = document.getElementById(id);
+    el.classList.remove('on', 'danger');
+    if (danger) el.classList.add('danger');
+    else if (on) el.classList.add('on');
+  }
+
+  // ===== DEMO / IDLE LOOPS =====
+  function demoStep(dt) {
+    const t = demoTime;
+    const cycle = t % 30;
+
+    if (cycle < 8) {
+      data.rpm = lerp(data.rpm, 1500 + (cycle / 8) * 5500, 0.04);
+      data.speed = lerp(data.speed, 30 + cycle * 22, 0.04);
+      data.tps = lerp(data.tps, 90 + Math.random() * 8, 0.1);
+    } else if (cycle < 12) {
+      data.rpm = lerp(data.rpm, 3500, 0.06);
+      data.speed = lerp(data.speed, 180, 0.02);
+      data.tps = lerp(data.tps, 60, 0.1);
+    } else if (cycle < 20) {
+      data.rpm = lerp(data.rpm, 3200 + Math.sin(t * 2) * 400, 0.05);
+      data.speed = lerp(data.speed, 160 + Math.sin(t * 0.5) * 20, 0.05);
+      data.tps = lerp(data.tps, 35 + Math.sin(t * 3) * 15, 0.1);
+    } else if (cycle < 25) {
+      data.rpm = lerp(data.rpm, 1800, 0.05);
+      data.speed = lerp(data.speed, 40, 0.04);
+      data.tps = lerp(data.tps, 0, 0.15);
+    } else {
+      data.rpm = lerp(data.rpm, 2200, 0.05);
+      data.speed = lerp(data.speed, 60, 0.04);
+      data.tps = lerp(data.tps, 25 + Math.sin(t * 4) * 10, 0.1);
+    }
+
+    data.coolant = lerp(data.coolant, 85 + (data.tps / 100) * 6 + Math.sin(t * 0.05) * 2, 0.005);
+    data.oilTemp = lerp(data.oilTemp, 90 + (data.tps / 100) * 25 + (data.rpm / 8000) * 10, 0.008);
+    data.oilPressure = lerp(data.oilPressure, 0.8 + (data.rpm / 8000) * 5.5, 0.05);
+    data.map = lerp(data.map, -0.6 + (data.tps / 100) * 0.6, 0.05);
+    data.afr = lerp(data.afr, 14.7 - (data.tps / 100) * 2.8 + (Math.random() - 0.5) * 0.4, 0.1);
+    data.battery = lerp(data.battery, 14.2 - (data.tps / 100) * 0.4, 0.02);
+    data.ignAdv = lerp(data.ignAdv, 35 - (data.tps / 100) * 18 - (data.rpm / 8000) * 4, 0.1);
+    data.maf = lerp(data.maf, 0.6 + (data.rpm / 8000) * 3.5 + (data.tps / 100) * 0.4, 0.1);
+    data.injPW = lerp(data.injPW, 1.5 + (data.tps / 100) * 8 + (data.rpm / 8000) * 2, 0.1);
+  }
+
+  function idleStep(dt) {
+    data.rpm = lerp(data.rpm, 750 + Math.sin(performance.now() / 200) * 30, 0.1);
+    data.speed = lerp(data.speed, 0, 0.1);
+    data.tps = lerp(data.tps, 0, 0.1);
+    data.coolant = lerp(data.coolant, 82, 0.01);
+    data.oilTemp = lerp(data.oilTemp, 85, 0.01);
+    data.oilPressure = lerp(data.oilPressure, 1.2, 0.05);
+    data.map = lerp(data.map, -0.6, 0.05);
+    data.afr = lerp(data.afr, 14.7, 0.1);
+    data.battery = lerp(data.battery, 14.2, 0.02);
+    data.ignAdv = lerp(data.ignAdv, 12, 0.1);
+    data.maf = lerp(data.maf, 0.8, 0.1);
+    data.injPW = lerp(data.injPW, 2.0, 0.1);
+  }
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function loop(now) {
+    const dt = (now - lastUpdate) / 1000;
+    lastUpdate = now;
+
+    if (mode === 'demo') {
+      demoStep(dt);
+    } else if (mode === 'idle') {
+      idleStep(dt);
+    }
+    // mode === 'live' or 'manual': data is being set externally,
+    // we just render whatever's in `data`.
+
+    // Distance accumulates from current speed regardless of source.
+    tripDist += (data.speed / 3600) * dt;
+    totalDist += (data.speed / 3600) * dt;
+    demoTime += dt; // used for average-speed calc
+
+    render();
+    requestAnimationFrame(loop);
+  }
+
+  // ===== SIM SLIDERS =====
+  const sliders = [
+    { id: 's-rpm', key: 'rpm', scale: 1, valEl: 's-rpm-v' },
+    { id: 's-speed', key: 'speed', scale: 1, valEl: 's-speed-v' },
+    { id: 's-tps', key: 'tps', scale: 1, valEl: 's-tps-v' },
+    { id: 's-cool', key: 'coolant', scale: 1, valEl: 's-cool-v' },
+    { id: 's-otmp', key: 'oilTemp', scale: 1, valEl: 's-otmp-v' },
+    { id: 's-oilp', key: 'oilPressure', scale: 0.1, valEl: 's-oilp-v', fmt: v => v.toFixed(1) },
+    { id: 's-afr', key: 'afr', scale: 0.1, valEl: 's-afr-v', fmt: v => v.toFixed(1) },
+    { id: 's-batt', key: 'battery', scale: 0.1, valEl: 's-batt-v', fmt: v => v.toFixed(1) },
+    { id: 's-map', key: 'map', scale: 0.1, valEl: 's-map-v', fmt: v => v.toFixed(1) },
+  ];
+
+  sliders.forEach(s => {
+    const el = document.getElementById(s.id);
+    const valEl = document.getElementById(s.valEl);
+    const update = () => {
+      const v = parseFloat(el.value) * s.scale;
+      if (mode === 'manual') data[s.key] = v;
+      valEl.textContent = s.fmt ? s.fmt(v) : Math.round(v);
+    };
+    el.addEventListener('input', update);
+    update();
+  });
+
+  document.querySelectorAll('.sim button.mode').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sim button.mode').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      mode = btn.dataset.mode;
+      document.getElementById('sim-mode-label').textContent = btn.textContent;
+      if (mode === 'manual') {
+        sliders.forEach(s => {
+          const v = parseFloat(document.getElementById(s.id).value) * s.scale;
+          data[s.key] = v;
+        });
+      }
+      if (mode === 'demo') {
+        peakSpeed = 0;
+        tripDist = 0;
+        totalDist = 0;
+        demoTime = 0;
+      }
+    });
+  });
+
+  // Start boot then loop
+  runBoot();
+  requestAnimationFrame(loop);
+
+  // ===== LIVE TELEMETRY WEBSOCKET =====
+  // Connects to the Python server on the same host. If the server isn't
+  // reachable (e.g. you're just previewing the file from disk), the
+  // in-browser demo keeps running so the dash never looks dead.
+
+  let wsConnected = false;
+  let wsLastMessage = 0;
+  let wsRetryDelay = 1000;
+
+  function connectWS() {
+    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = location.host || 'localhost:8080';
+    const url = `${proto}//${host}/ws`;
+
+    let ws;
+    try {
+      ws = new WebSocket(url);
+    } catch (e) {
+      scheduleReconnect();
+      return;
+    }
+
+    ws.onopen = () => {
+      wsConnected = true;
+      wsRetryDelay = 1000;
+      // Hand control of the data to the live feed by setting mode away from demo.
+      if (mode === 'demo') mode = 'live';
+      document.getElementById('link-status').textContent = 'LIVE';
+    };
+
+    ws.onmessage = (e) => {
+      try {
+        const payload = JSON.parse(e.data);
+        if (payload._meta) {
+          // Server announces its mode (consult / simulator)
+          const m = payload._meta.mode || 'live';
+          document.getElementById('link-status').textContent =
+            m === 'consult' ? 'ECU' : 'SIM';
+          return;
+        }
+        // Merge fields into data — only known keys, ignore extras.
+        for (const k of Object.keys(payload)) {
+          if (k in data) data[k] = payload[k];
+        }
+        wsLastMessage = performance.now();
+      } catch (err) {
+        // Ignore bad frames
+      }
+    };
+
+    ws.onclose = () => {
+      wsConnected = false;
+      document.getElementById('link-status').textContent = 'OFFLINE';
+      // Resume demo so the UI keeps moving while reconnecting.
+      if (mode === 'live') mode = 'demo';
+      scheduleReconnect();
+    };
+
+    ws.onerror = () => {
+      try { ws.close(); } catch (e) {}
+    };
+  }
+
+  function scheduleReconnect() {
+    setTimeout(connectWS, wsRetryDelay);
+    wsRetryDelay = Math.min(wsRetryDelay * 1.5, 8000);
+  }
+
+  // Watchdog: if we said we're live but stop getting frames, mark offline.
+  setInterval(() => {
+    if (wsConnected && performance.now() - wsLastMessage > 3000) {
+      document.getElementById('link-status').textContent = 'STALE';
+    }
+  }, 1000);
+
+  // Kick off the connection.
+  connectWS();
+</script>
+</body>
+</html>
