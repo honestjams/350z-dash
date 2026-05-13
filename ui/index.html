@@ -6,7 +6,7 @@
 <title>350Z.DGN // CONSULT-II // VQ35DE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Major+Mono+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg-deep: #000300;
@@ -29,7 +29,8 @@
 
     --glow-sm: 0 0 2px var(--phos);
     --glow-md: 0 0 3px var(--phos), 0 0 8px var(--phos-mid);
-    --glow-lg: 0 0 4px var(--phos-bright), 0 0 10px var(--phos);
+    --glow-lg: 0 0 4px var(--phos-bright), 0 0 12px var(--phos);
+    --glow-huge: 0 0 4px var(--phos-bright), 0 0 14px var(--phos), 0 0 28px var(--phos-mid);
     --glow-amber: 0 0 3px var(--amber), 0 0 8px var(--amber);
     --glow-red: 0 0 4px var(--red), 0 0 10px var(--red);
   }
@@ -47,13 +48,12 @@
     -webkit-font-smoothing: none;
   }
 
-  /* ===== CRT BACKGROUND EFFECTS ===== */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(ellipse at 50% 50%, rgba(43, 255, 94, 0.04), transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(92, 255, 133, 0.04), transparent 50%),
       radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
     pointer-events: none;
     z-index: 50;
@@ -63,13 +63,9 @@
     content: '';
     position: fixed;
     inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0) 0px,
-      rgba(0, 0, 0, 0) 3px,
-      rgba(0, 0, 0, 0.18) 4px,
-      rgba(0, 0, 0, 0.18) 4px
-    );
+    background: repeating-linear-gradient(0deg,
+      rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) 3px,
+      rgba(0, 0, 0, 0.18) 4px, rgba(0, 0, 0, 0.18) 4px);
     pointer-events: none;
     z-index: 90;
     mix-blend-mode: multiply;
@@ -90,12 +86,6 @@
     100% { top: 100%; }
   }
 
-  body {
-    background:
-      radial-gradient(ellipse at 50% 30%, rgba(43, 255, 94, 0.03), transparent 60%),
-      var(--bg-deep);
-  }
-
   /* ===== LAYOUT ===== */
   .dash-wrap {
     position: fixed;
@@ -110,459 +100,480 @@
     width: 800px;
     height: 480px;
     display: grid;
-    grid-template-rows: 32px 22px 74px 1fr 56px;
-    grid-template-columns: 1fr;
+    grid-template-rows: 28px 1fr 64px;
     z-index: 1;
     transform: rotateX(0.5deg);
   }
 
-  /* ===== HEADER ===== */
+  /* ===== TOP STATUS STRIP ===== */
   .hdr {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    gap: 16px;
-    padding: 0 12px;
-    border-bottom: 1px solid var(--phos-dim);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 12px;
+    padding: 0 10px;
+    border-bottom: 2px solid var(--phos);
+    font-size: 10px;
     letter-spacing: 1px;
-    background: linear-gradient(180deg, rgba(43, 255, 94, 0.04), transparent);
+    background: rgba(0, 12, 4, 0.6);
   }
 
-  .hdr-left { display: flex; gap: 8px; align-items: center; color: var(--phos); }
-  .hdr-left .pill {
-    border: 1px solid var(--phos-mid);
-    padding: 1px 6px;
+  .hdr-left, .hdr-right {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .hdr-right { justify-content: flex-end; color: var(--phos-mid); }
+  .hdr-left { color: var(--phos); }
+
+  .hdr-title {
+    font-size: 11px;
+    letter-spacing: 3px;
     color: var(--phos-bright);
-    background: rgba(43, 255, 94, 0.08);
+    text-shadow: 0 0 2px var(--phos-bright), 0 0 6px var(--phos);
+    text-align: center;
   }
-  .hdr-title { display: flex; gap: 12px; align-items: center; justify-content: center; font-size: 13px; }
-  .hdr-title .sep { color: var(--phos-dim); }
-  .hdr-title .ver { color: var(--phos-mid); }
-  .hdr-right { display: flex; gap: 12px; align-items: center; color: var(--phos-mid); font-size: 11px; }
-  .hdr-right .live { color: var(--phos-bright); text-shadow: var(--glow-md); }
 
-  .blink::after { content: '_'; animation: caret 1s steps(2) infinite; color: var(--phos-bright); }
+  .live { color: var(--phos-bright); text-shadow: var(--glow-md); }
+
+  .blink::after {
+    content: '_';
+    animation: caret 1s steps(2) infinite;
+    color: var(--phos-bright);
+  }
+
   @keyframes caret {
     0%, 50% { opacity: 1; }
     50.01%, 100% { opacity: 0; }
   }
 
-  /* ===== WARN BAR ===== */
-  .warn-bar {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    padding: 0 12px;
-    border-bottom: 1px solid var(--phos-dim);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 1px;
-    background: rgba(4, 18, 8, 0.6);
-  }
-  .warn-bar .lbl { color: var(--phos-mid); margin-right: 4px; }
-  .warn {
-    padding: 0 6px;
-    border: 1px solid var(--phos-dim);
-    color: var(--phos-dim);
-    background: transparent;
-    transition: all 0.1s;
-  }
-  .warn.on {
-    border-color: var(--amber);
-    color: var(--amber);
-    background: rgba(255, 176, 0, 0.1);
-    text-shadow: var(--glow-amber);
-  }
-  .warn.danger {
-    border-color: var(--red);
-    color: var(--red);
-    background: rgba(255, 34, 0, 0.18);
-    text-shadow: var(--glow-red);
-    animation: alarm 0.4s steps(2) infinite;
-  }
-  @keyframes alarm {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.35; }
-  }
-
-  /* ===== HORIZONTAL TACH BAR (Z31 signature) ===== */
-  .tach {
+  /* ===== MAIN GRID ===== */
+  .main {
     display: grid;
-    grid-template-columns: 64px 1fr 130px;
-    gap: 8px;
-    align-items: stretch;
-    padding: 6px 12px 8px;
-    border-bottom: 1px solid var(--phos-dim);
-    background: rgba(4, 18, 8, 0.45);
+    grid-template-rows: 140px 1fr;
+    gap: 6px;
+    padding: 6px;
+    overflow: hidden;
   }
 
-  .tach-lbl {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--phos-mid);
-    padding-top: 2px;
+  /* ===== HORIZONTAL TACH (top of main) — Z31 SIGNATURE ===== */
+  .tach-block {
+    border: 2px solid var(--phos);
+    background: rgba(0, 16, 6, 0.5);
+    padding: 6px 10px 8px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 4px;
+    position: relative;
   }
-  .tach-lbl .top { color: var(--phos); text-shadow: var(--glow-sm); }
-  .tach-lbl .bot { color: var(--phos-dim); font-size: 9px; letter-spacing: 1px; }
+
+  .tach-block::before, .tach-block::after {
+    content: '';
+    position: absolute;
+    width: 10px; height: 10px;
+    border-color: var(--phos-bright);
+    border-style: solid;
+    border-width: 0;
+  }
+  .tach-block::before { top: -2px; left: -2px; border-top-width: 2px; border-left-width: 2px; }
+  .tach-block::after { top: -2px; right: -2px; border-top-width: 2px; border-right-width: 2px; }
+
+  .tach-top {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: 14px;
+  }
+
+  .tach-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--phos-mid);
+  }
+
+  .tach-rpm-big {
+    font-family: 'VT323', monospace;
+    font-size: 44px;
+    color: var(--phos-bright);
+    text-shadow: 0 0 2px var(--phos-bright), 0 0 6px var(--phos);
+    line-height: 1;
+    text-align: center;
+    letter-spacing: 4px;
+  }
+
+  .tach-rpm-big .unit {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--phos-mid);
+    letter-spacing: 2px;
+    margin-left: 8px;
+    text-shadow: none;
+  }
 
   .tach-bar {
     display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .tach-seg-row {
-    display: flex;
     gap: 2px;
-    flex: 1;
-    min-height: 36px;
+    align-items: stretch;
+    height: 42px;
+    padding: 2px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--phos-mid);
   }
 
-  .tseg {
+  .tach-seg {
     flex: 1;
-    background: var(--phos-faint);
-    border: 1px solid var(--phos-vdim);
-    transition: background 0.04s, box-shadow 0.04s, border-color 0.04s;
+    background: var(--phos-vdim);
+    transition: all 0.04s;
   }
-  .tseg.on { background: var(--phos); border-color: var(--phos); box-shadow: 0 0 4px var(--phos), inset 0 0 2px var(--phos-bright); }
-  .tseg.on.warn { background: var(--amber); border-color: var(--amber); box-shadow: 0 0 5px var(--amber), inset 0 0 2px #fff1c2; }
-  .tseg.on.danger { background: var(--red); border-color: var(--red); box-shadow: 0 0 6px var(--red), inset 0 0 2px #ffd1c2; }
 
-  .tach-ticks {
+  .tach-seg.on { background: var(--phos); box-shadow: 0 0 6px var(--phos), inset 0 0 4px var(--phos-bright); }
+  .tach-seg.on.warn { background: var(--amber); box-shadow: 0 0 6px var(--amber), inset 0 0 4px var(--amber); }
+  .tach-seg.on.danger { background: var(--red); box-shadow: 0 0 8px var(--red), inset 0 0 4px var(--red); }
+
+  .tach-scale {
     display: flex;
     justify-content: space-between;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 9px;
+    font-size: 11px;
     color: var(--phos-mid);
-    letter-spacing: 0;
-    padding: 0 1px;
-  }
-  .tach-ticks span { display: inline-block; width: 0; text-align: center; }
-  .tach-ticks .rl { color: var(--red); text-shadow: var(--glow-red); }
-
-  .tach-num {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    border: 1px solid var(--phos-mid);
-    background: rgba(8, 26, 12, 0.7);
-    padding: 2px 8px;
-    position: relative;
-  }
-  .tach-num::before, .tach-num::after {
-    content: '';
-    position: absolute;
-    width: 6px; height: 6px;
-    border-color: var(--phos);
-    border-style: solid;
-    border-width: 0;
-  }
-  .tach-num::before { top: -1px; left: -1px; border-top-width: 1px; border-left-width: 1px; }
-  .tach-num::after { bottom: -1px; right: -1px; border-bottom-width: 1px; border-right-width: 1px; }
-
-  .tach-num .v {
-    font-family: 'VT323', monospace;
-    font-size: 36px;
-    line-height: 0.9;
-    color: var(--phos-bright);
-    text-shadow: var(--glow-md);
+    padding: 0 2px;
     letter-spacing: 1px;
   }
-  .tach-num .v.warn { color: var(--amber); text-shadow: var(--glow-amber); }
-  .tach-num .v.danger { color: var(--red); text-shadow: var(--glow-red); }
-  .tach-num .u {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: var(--phos-mid);
-    margin-top: -2px;
-  }
 
-  /* ===== MAIN HERO ===== */
-  .hero {
+  .tach-scale .redline { color: var(--red); text-shadow: var(--glow-red); }
+
+  /* ===== MAIN BODY ===== */
+  .body {
     display: grid;
-    grid-template-columns: 230px 1fr 220px;
+    grid-template-columns: 1.1fr 1fr 1fr;
     gap: 6px;
-    padding: 6px 12px;
-    overflow: hidden;
-    border-bottom: 1px solid var(--phos-dim);
+    min-height: 0;
   }
 
-  .hero-cell {
+  /* Z31-style box with corner brackets */
+  .box {
+    border: 2px solid var(--phos);
+    background: rgba(0, 16, 6, 0.5);
     position: relative;
-    background: rgba(8, 26, 12, 0.55);
-    border: 1px solid var(--phos-mid);
+    padding: 6px 8px;
     display: flex;
     flex-direction: column;
   }
 
-  .hero-cell::before, .hero-cell::after {
+  .box::before, .box::after {
     content: '';
     position: absolute;
     width: 8px; height: 8px;
-    border-color: var(--phos);
+    border-color: var(--phos-bright);
     border-style: solid;
     border-width: 0;
+    pointer-events: none;
   }
-  .hero-cell::before { top: -1px; left: -1px; border-top-width: 1px; border-left-width: 1px; }
-  .hero-cell::after { bottom: -1px; right: -1px; border-bottom-width: 1px; border-right-width: 1px; }
+  .box::before { top: -2px; left: -2px; border-top-width: 2px; border-left-width: 2px; }
+  .box::after { bottom: -2px; right: -2px; border-bottom-width: 2px; border-right-width: 2px; }
 
-  /* Gear */
-  .gear-cell { align-items: stretch; padding: 4px 6px; overflow: hidden; }
-  .gear-cell .head {
-    display: flex; justify-content: space-between;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px; letter-spacing: 2px;
+  .box-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--phos-mid);
+    text-align: center;
+    margin-bottom: 2px;
+  }
+
+  /* === SPEED PANEL === */
+  .speed-panel {
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    gap: 2px;
+  }
+
+  .speed-huge {
+    font-family: 'VT323', monospace;
+    font-size: 150px;
+    line-height: 0.85;
+    color: var(--phos-bright);
+    text-shadow: var(--glow-huge);
+    text-align: center;
+    letter-spacing: 2px;
+    align-self: center;
+  }
+
+  .speed-unit-row {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 6px;
     color: var(--phos-mid);
   }
-  .gear-cell .head .meta { font-size: 9px; color: var(--phos-dim); letter-spacing: 1px; }
-  .gear-big {
-    flex: 1;
+
+  .speed-unit-row .u {
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: var(--phos-bright);
+    text-shadow: var(--glow-sm);
+  }
+
+  .speed-meta {
     display: grid;
-    place-items: center;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 8px;
+    font-size: 11px;
+    border-top: 1px solid var(--phos-vdim);
+    padding-top: 3px;
+  }
+
+  .speed-meta .row {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .speed-meta .lbl { color: var(--phos-mid); }
+  .speed-meta .val { color: var(--phos-bright); text-shadow: 0 0 1px var(--phos-bright); }
+
+  /* === GEAR PANEL === */
+  .gear-panel {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    align-items: center;
+    justify-items: center;
+  }
+
+  .gear-huge {
     font-family: 'VT323', monospace;
     font-size: 220px;
     line-height: 0.78;
     color: var(--phos-bright);
-    text-shadow:
-      0 0 2px var(--phos-bright),
-      0 0 10px var(--phos),
-      0 0 22px var(--phos-mid);
-    margin-top: -6px;
+    text-shadow: var(--glow-huge);
+    letter-spacing: -8px;
   }
-  .gear-big.redline {
+
+  .gear-huge.redline {
     color: var(--red);
-    text-shadow: 0 0 2px var(--red), 0 0 12px var(--red);
+    text-shadow: 0 0 4px var(--red), 0 0 14px var(--red), 0 0 28px var(--red);
     animation: gear-pulse 0.4s ease-in-out infinite;
   }
+
   @keyframes gear-pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
   }
 
-  /* Speed */
-  .speed-cell { padding: 4px 8px; overflow: hidden; }
-  .speed-cell .head {
-    display: flex; justify-content: space-between;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px; letter-spacing: 2px;
-    color: var(--phos-mid);
-  }
-  .speed-cell .head .meta { font-size: 9px; color: var(--phos-dim); letter-spacing: 1px; }
-
-  .speed-big {
-    font-family: 'VT323', monospace;
-    font-size: 150px;
-    line-height: 0.82;
-    color: var(--phos-bright);
-    text-shadow:
-      0 0 2px var(--phos-bright),
-      0 0 8px var(--phos),
-      0 0 18px var(--phos-mid);
-    text-align: center;
-    letter-spacing: 4px;
-    flex: 1;
-    display: grid;
-    place-items: center;
-    margin-top: -4px;
-  }
-  .speed-unit {
-    text-align: center;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 4px;
-    color: var(--phos-mid);
-    margin-top: -2px;
-  }
-  .speed-aux {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 4px;
-    padding: 4px 0 2px;
-    border-top: 1px solid var(--phos-vdim);
+  .gear-shift-row {
+    display: flex;
+    gap: 2px;
+    width: 100%;
+    height: 10px;
     margin-top: 4px;
   }
-  .speed-aux .ax {
-    text-align: center;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 9px;
-    color: var(--phos-mid);
-    letter-spacing: 1px;
-  }
-  .speed-aux .ax .v {
-    display: block;
-    font-family: 'VT323', monospace;
-    font-size: 16px;
-    color: var(--phos-bright);
-    text-shadow: var(--glow-sm);
-    line-height: 1;
-  }
 
-  /* Right column: vertical bar gauges */
-  .vbars {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 4px;
-    padding: 4px;
-    overflow: hidden;
-  }
-
-  .vbar {
-    position: relative;
-    background: rgba(8, 26, 12, 0.55);
-    border: 1px solid var(--phos-mid);
-    display: flex;
-    flex-direction: column;
-    padding: 3px 3px 4px;
-    overflow: hidden;
-  }
-  .vbar::before, .vbar::after {
-    content: '';
-    position: absolute;
-    width: 5px; height: 5px;
-    border-color: var(--phos);
-    border-style: solid;
-    border-width: 0;
-  }
-  .vbar::before { top: -1px; left: -1px; border-top-width: 1px; border-left-width: 1px; }
-  .vbar::after { bottom: -1px; right: -1px; border-bottom-width: 1px; border-right-width: 1px; }
-
-  .vbar .lbl {
-    text-align: center;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: var(--phos);
-    text-shadow: var(--glow-sm);
-  }
-  .vbar .sub {
-    text-align: center;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 8px;
-    color: var(--phos-dim);
-    letter-spacing: 1px;
-    margin-top: -1px;
-  }
-  .vbar .col {
+  .shift-pip {
     flex: 1;
-    display: flex;
-    flex-direction: column-reverse;
-    gap: 2px;
-    padding: 4px 3px;
-    margin-top: 3px;
-    background: var(--phos-faint);
-    border: 1px solid var(--phos-vdim);
+    background: var(--phos-vdim);
+    transition: all 0.05s;
+  }
+
+  .shift-pip.on { background: var(--phos); box-shadow: 0 0 4px var(--phos); }
+  .shift-pip.on.warn { background: var(--amber); box-shadow: 0 0 4px var(--amber); }
+  .shift-pip.on.danger { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+  /* === VERTICAL BAR STACK === */
+  .vbar-stack {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 4px;
     min-height: 0;
   }
-  .vseg {
-    flex: 1;
-    background: var(--phos-faint);
-    border: 1px solid var(--phos-vdim);
-    transition: background 0.04s, box-shadow 0.04s, border-color 0.04s;
-  }
-  .vseg.on { background: var(--phos); border-color: var(--phos); box-shadow: 0 0 3px var(--phos), inset 0 0 1px var(--phos-bright); }
-  .vseg.on.warn { background: var(--amber); border-color: var(--amber); box-shadow: 0 0 4px var(--amber); }
-  .vseg.on.danger { background: var(--red); border-color: var(--red); box-shadow: 0 0 5px var(--red); }
 
-  .vbar .val {
-    text-align: center;
+  .vbar-row {
+    border: 1px solid var(--phos-mid);
+    background: rgba(0, 16, 6, 0.5);
+    padding: 5px 8px;
+    display: grid;
+    grid-template-columns: 62px 1fr 78px;
+    gap: 6px;
+    align-items: center;
+    position: relative;
+    min-height: 0;
+  }
+
+  .vbar-row::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 6px; height: 6px;
+    border-top: 1px solid var(--phos-bright);
+    border-left: 1px solid var(--phos-bright);
+  }
+
+  .vbar-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--phos-mid);
+  }
+
+  .vbar-track {
+    display: flex;
+    gap: 1px;
+    height: 24px;
+    padding: 1px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--phos-dim);
+  }
+
+  .vbar-cell {
+    flex: 1;
+    background: var(--phos-vdim);
+    transition: all 0.05s;
+  }
+
+  .vbar-cell.on { background: var(--phos); box-shadow: 0 0 3px var(--phos); }
+  .vbar-cell.on.warn { background: var(--amber); box-shadow: 0 0 3px var(--amber); }
+  .vbar-cell.on.danger { background: var(--red); box-shadow: 0 0 4px var(--red); }
+
+  .vbar-value {
     font-family: 'VT323', monospace;
-    font-size: 22px;
+    font-size: 32px;
     line-height: 1;
     color: var(--phos-bright);
-    text-shadow: var(--glow-md);
-    margin-top: 3px;
-  }
-  .vbar .val.warn { color: var(--amber); text-shadow: var(--glow-amber); }
-  .vbar .val.danger { color: var(--red); text-shadow: var(--glow-red); }
-  .vbar .unit {
-    text-align: center;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 8px;
-    color: var(--phos-mid);
-    letter-spacing: 2px;
-    margin-top: -2px;
+    text-shadow: 0 0 2px var(--phos-bright), 0 0 4px var(--phos);
+    text-align: right;
+    letter-spacing: 1px;
   }
 
-  /* ===== FOOTER STRIP (THROTTLE | OIL.PSI | MAP | AFR | IGN) ===== */
+  .vbar-value .unit {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--phos-mid);
+    margin-left: 2px;
+    text-shadow: none;
+  }
+
+  .vbar-value.warn { color: var(--amber); text-shadow: var(--glow-amber); }
+  .vbar-value.danger { color: var(--red); text-shadow: var(--glow-red); }
+
+  /* ===== FOOTER ===== */
   .ftr {
     display: grid;
-    grid-template-columns: 1.7fr 1fr 1fr 1fr 1fr;
-    gap: 8px;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
+    gap: 4px;
+    padding: 5px 6px;
+    border-top: 2px solid var(--phos);
+    background: rgba(0, 8, 0, 0.7);
     align-items: stretch;
-    padding: 6px 12px;
-    background: rgba(0, 8, 0, 0.55);
-    overflow: hidden;
   }
 
   .ftr-cell {
+    border: 1px solid var(--phos-mid);
+    padding: 4px 7px;
     display: grid;
     grid-template-rows: auto 1fr;
-    gap: 2px;
-    border-left: 1px solid var(--phos-vdim);
-    padding-left: 8px;
+    background: rgba(0, 12, 4, 0.4);
+    position: relative;
   }
-  .ftr-cell:first-child { border-left: 0; padding-left: 0; }
 
-  .ftr-head {
+  .ftr-cell::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 5px; height: 5px;
+    border-top: 1px solid var(--phos-bright);
+    border-left: 1px solid var(--phos-bright);
+  }
+
+  .ftr-lbl {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--phos-mid);
+  }
+
+  .ftr-val {
+    font-family: 'VT323', monospace;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--phos-bright);
+    text-shadow: 0 0 2px var(--phos-bright), 0 0 4px var(--phos);
+    text-align: right;
+    align-self: end;
+  }
+
+  .ftr-val .u {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--phos-mid);
+    margin-left: 2px;
+    text-shadow: none;
+  }
+
+  .ftr-val.warn { color: var(--amber); text-shadow: var(--glow-amber); }
+  .ftr-val.danger { color: var(--red); text-shadow: var(--glow-red); }
+
+  /* Throttle horizontal bar */
+  .tps-cell {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 3px;
+  }
+
+  .tps-top {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 9px;
-    color: var(--phos-mid);
-    letter-spacing: 1px;
   }
-  .ftr-head .v {
-    color: var(--phos-bright);
+
+  .tps-top .v {
     font-family: 'VT323', monospace;
-    font-size: 20px;
-    line-height: 1;
+    font-size: 22px;
+    color: var(--phos-bright);
     text-shadow: var(--glow-sm);
   }
-  .ftr-head .v.warn { color: var(--amber); text-shadow: var(--glow-amber); }
-  .ftr-head .v.danger { color: var(--red); text-shadow: var(--glow-red); }
-  .ftr-head .u { color: var(--phos-mid); font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 1px; margin-left: 2px; }
 
-  /* Horizontal mini-bar (throttle) */
-  .hbar {
+  .tps-bar-h {
     display: flex;
-    gap: 2px;
-    height: 14px;
-    align-items: stretch;
-    border: 1px solid var(--phos-vdim);
-    padding: 1px;
-    background: var(--phos-faint);
-  }
-  .hseg {
-    flex: 1;
-    background: var(--phos-faint);
-    border: 1px solid var(--phos-vdim);
-  }
-  .hseg.on { background: var(--phos); border-color: var(--phos); box-shadow: 0 0 3px var(--phos); }
-  .hseg.on.warn { background: var(--amber); border-color: var(--amber); box-shadow: 0 0 3px var(--amber); }
-  .hseg.on.danger { background: var(--red); border-color: var(--red); box-shadow: 0 0 4px var(--red); }
-
-  .ftr-stat {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     gap: 1px;
+    height: 14px;
+    padding: 1px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--phos-dim);
+    align-self: center;
   }
-  .ftr-stat .lbl { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--phos-mid); letter-spacing: 1px; }
-  .ftr-stat .v { font-family: 'VT323', monospace; font-size: 22px; line-height: 1; color: var(--phos-bright); text-shadow: var(--glow-sm); }
-  .ftr-stat .v.warn { color: var(--amber); text-shadow: var(--glow-amber); }
-  .ftr-stat .v.danger { color: var(--red); text-shadow: var(--glow-red); }
-  .ftr-stat .u { font-family: 'Share Tech Mono', monospace; font-size: 8px; color: var(--phos-mid); letter-spacing: 1px; }
+
+  .tps-bar-h .seg {
+    flex: 1;
+    background: var(--phos-vdim);
+    transition: all 0.04s;
+  }
+
+  .tps-bar-h .seg.on { background: var(--phos); box-shadow: 0 0 3px var(--phos); }
+  .tps-bar-h .seg.on.warn { background: var(--amber); box-shadow: 0 0 3px var(--amber); }
+  .tps-bar-h .seg.on.danger { background: var(--red); box-shadow: 0 0 4px var(--red); }
+
+  /* WARN PILLS */
+  .warn-pill {
+    padding: 0 5px;
+    border: 1px solid var(--phos-dim);
+    color: var(--phos-dim);
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+
+  .warn-pill.on {
+    border-color: var(--amber);
+    color: var(--amber);
+    background: rgba(255, 194, 51, 0.1);
+    text-shadow: var(--glow-amber);
+  }
+
+  .warn-pill.danger {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(255, 58, 28, 0.18);
+    text-shadow: var(--glow-red);
+    animation: alarm 0.4s steps(2) infinite;
+  }
+
+  @keyframes alarm {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
 
   /* ===== SIM PANEL ===== */
   .sim {
@@ -577,11 +588,13 @@
     font-family: 'Share Tech Mono', monospace;
     font-size: 11px;
     color: var(--phos);
-    box-shadow: 0 0 20px rgba(43, 255, 94, 0.3);
+    box-shadow: 0 0 20px rgba(92, 255, 133, 0.3);
     transition: transform 0.3s;
     text-shadow: var(--glow-sm);
   }
+
   .sim.hidden { transform: translateX(260px); }
+
   .sim-head {
     display: flex;
     justify-content: space-between;
@@ -593,6 +606,7 @@
     border-bottom: 1px solid var(--phos-dim);
     padding-bottom: 4px;
   }
+
   .sim-toggle {
     position: fixed;
     top: 12px;
@@ -607,8 +621,9 @@
     padding: 6px 10px;
     cursor: pointer;
     text-shadow: var(--glow-sm);
-    box-shadow: 0 0 8px rgba(43, 255, 94, 0.3);
+    box-shadow: 0 0 8px rgba(92, 255, 133, 0.3);
   }
+
   .sim label {
     display: flex;
     justify-content: space-between;
@@ -618,7 +633,9 @@
     color: var(--phos-mid);
     letter-spacing: 1px;
   }
+
   .sim label span { color: var(--phos-bright); }
+
   .sim input[type="range"] {
     width: 100%;
     appearance: none;
@@ -626,6 +643,7 @@
     background: var(--phos-vdim);
     outline: none;
   }
+
   .sim input[type="range"]::-webkit-slider-thumb {
     appearance: none;
     width: 10px;
@@ -634,9 +652,15 @@
     cursor: pointer;
     box-shadow: 0 0 6px var(--phos);
   }
-  .mode-btns { display: flex; gap: 4px; margin-top: 10px; }
+
+  .mode-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-top: 10px;
+  }
+
   .sim button.mode {
-    flex: 1;
     background: transparent;
     border: 1px solid var(--phos-dim);
     color: var(--phos-mid);
@@ -647,14 +671,15 @@
     cursor: pointer;
     text-shadow: var(--glow-sm);
   }
+
   .sim button.mode.active {
-    background: rgba(43, 255, 94, 0.15);
+    background: rgba(92, 255, 133, 0.15);
     color: var(--phos-bright);
     border-color: var(--phos);
     box-shadow: 0 0 6px var(--phos-mid);
   }
 
-  /* ===== BOOT SEQUENCE ===== */
+  /* BOOT SEQUENCE */
   .boot {
     position: fixed;
     inset: 0;
@@ -668,6 +693,7 @@
     overflow: hidden;
     transition: opacity 0.6s;
   }
+
   .boot.done { opacity: 0; pointer-events: none; }
   .boot pre { line-height: 1.4; white-space: pre-wrap; }
   .boot .ok { color: var(--phos-bright); }
@@ -678,11 +704,10 @@
     0% { opacity: 0; filter: blur(4px); }
     100% { opacity: 1; filter: blur(0); }
   }
+
   .dash > * { animation: phos-in 0.5s ease-out backwards; }
   .hdr { animation-delay: 0.1s; }
-  .warn-bar { animation-delay: 0.15s; }
-  .tach { animation-delay: 0.25s; }
-  .hero { animation-delay: 0.35s; }
+  .main { animation-delay: 0.3s; }
   .ftr { animation-delay: 0.5s; }
 </style>
 </head>
@@ -690,147 +715,126 @@
 
 <div class="crt-sweep"></div>
 
-<div class="boot" id="boot"><pre id="boot-text"></pre></div>
+<div class="boot" id="boot">
+<pre id="boot-text"></pre>
+</div>
 
 <button class="sim-toggle" onclick="document.querySelector('.sim').classList.toggle('hidden')">[ SIM ]</button>
 
 <div class="dash-wrap">
   <div class="dash" id="dash">
 
-    <!-- ===== HEADER ===== -->
     <div class="hdr">
       <div class="hdr-left">
-        <span class="pill">SYS-OK</span>
-        <span id="proc-id">PROC::0x4A8B</span>
-      </div>
-      <div class="hdr-title">
         <span>350Z.DGN</span>
-        <span class="sep">//</span>
-        <span class="ver">v2.7</span>
-        <span class="sep">//</span>
-        <span>CONSULT-II</span>
-        <span class="sep">//</span>
-        <span>VQ35DE</span>
+        <span style="color:var(--phos-dim);">v2.6</span>
+        <span class="warn-pill" id="w-eng">ENG</span>
+        <span class="warn-pill" id="w-oil">OIL</span>
+        <span class="warn-pill" id="w-tmp">TMP</span>
+        <span class="warn-pill" id="w-bat">BAT</span>
+        <span class="warn-pill" id="w-knk">KNK</span>
       </div>
+
+      <div class="hdr-title">CONSULT-II // VQ35DE</div>
+
       <div class="hdr-right">
         <span id="time">00:00:00</span>
-        <span class="sep">│</span>
+        <span style="color:var(--phos-dim);">│</span>
         <span class="live blink" id="link-status">LINK</span>
       </div>
     </div>
 
-    <!-- ===== WARN BAR ===== -->
-    <div class="warn-bar">
-      <span class="lbl">[ALERT.BUS]</span>
-      <span class="warn" id="w-eng">ENG</span>
-      <span class="warn" id="w-oil">OIL</span>
-      <span class="warn" id="w-tmp">TEMP</span>
-      <span class="warn" id="w-bat">BAT</span>
-      <span class="warn" id="w-abs">ABS</span>
-      <span class="warn" id="w-knk">KNOCK</span>
-      <span style="margin-left:auto; color:var(--phos-dim);" id="sn">SN:#A4B9-7733</span>
+    <div class="main">
+
+      <div class="tach-block">
+        <div class="tach-top">
+          <div class="tach-label">&lt; TACHOMETER &gt;</div>
+          <div class="tach-rpm-big" id="tach-rpm">0000<span class="unit">RPM</span></div>
+          <div class="tach-label" id="tach-mode">&lt; STREAM &gt;</div>
+        </div>
+        <div class="tach-bar" id="tach-bar"></div>
+        <div class="tach-scale">
+          <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span>
+          <span>5</span><span>6</span><span class="redline">7</span><span class="redline">8</span>
+        </div>
+      </div>
+
+      <div class="body">
+
+        <div class="box speed-panel">
+          <div class="box-label">&lt; SPEED &gt;</div>
+          <div class="speed-huge" id="speed">000</div>
+          <div class="speed-unit-row"><span class="u">km/h</span></div>
+          <div class="speed-meta">
+            <div class="row"><span class="lbl">0-100</span><span class="val" id="t-060">--.--</span></div>
+            <div class="row"><span class="lbl">PEAK</span><span class="val" id="peak">000</span></div>
+            <div class="row"><span class="lbl">TRIP</span><span class="val" id="trip">0.0</span></div>
+            <div class="row"><span class="lbl">AVG</span><span class="val" id="avg">000</span></div>
+          </div>
+        </div>
+
+        <div class="box gear-panel">
+          <div class="box-label">&lt; GEAR &gt;</div>
+          <div class="gear-huge" id="gear">N</div>
+          <div class="gear-shift-row" id="shift-strip"></div>
+        </div>
+
+        <div class="vbar-stack">
+          <div class="vbar-row">
+            <div class="vbar-label">COOLANT</div>
+            <div class="vbar-track" id="coolant-bar"></div>
+            <div class="vbar-value" id="coolant-v">082<span class="unit">°C</span></div>
+          </div>
+          <div class="vbar-row">
+            <div class="vbar-label">OIL.TMP</div>
+            <div class="vbar-track" id="oiltemp-bar"></div>
+            <div class="vbar-value" id="oiltemp-v">095<span class="unit">°C</span></div>
+          </div>
+          <div class="vbar-row">
+            <div class="vbar-label">BATTERY</div>
+            <div class="vbar-track" id="batt-bar"></div>
+            <div class="vbar-value" id="batt-v">14.2<span class="unit">V</span></div>
+          </div>
+        </div>
+
+      </div>
     </div>
 
-    <!-- ===== HORIZONTAL TACH BAR (Z31 signature) ===== -->
-    <div class="tach">
-      <div class="tach-lbl">
-        <span class="top">RPM</span>
-        <span class="bot">x1000</span>
-      </div>
-      <div class="tach-bar">
-        <div class="tach-seg-row" id="tach-segs"></div>
-        <div class="tach-ticks" id="tach-ticks"></div>
-      </div>
-      <div class="tach-num">
-        <span class="v" id="rpm-v">0000</span>
-        <span class="u">RPM</span>
-      </div>
-    </div>
-
-    <!-- ===== HERO: GEAR | SPEED | VERTICAL BARS ===== -->
-    <div class="hero">
-
-      <div class="hero-cell gear-cell">
-        <div class="head"><span>GEAR</span><span class="meta">RATIO.EST</span></div>
-        <div class="gear-big" id="gear">N</div>
-      </div>
-
-      <div class="hero-cell speed-cell">
-        <div class="head"><span>VEHICLE.SPEED</span><span class="meta">REG.0x0B</span></div>
-        <div class="speed-big" id="speed">000</div>
-        <div class="speed-unit">KM / H</div>
-        <div class="speed-aux">
-          <div class="ax">0-100<span class="v" id="t-060">--.--</span></div>
-          <div class="ax">PEAK<span class="v" id="peak">000</span></div>
-          <div class="ax">TRIP<span class="v" id="trip">0.0</span></div>
-        </div>
-      </div>
-
-      <div class="hero-cell vbars">
-        <div class="vbar">
-          <div class="lbl">COOLT</div>
-          <div class="sub">0x08</div>
-          <div class="col" id="cool-col"></div>
-          <div class="val" id="cool-v">082</div>
-          <div class="unit">°C</div>
-        </div>
-        <div class="vbar">
-          <div class="lbl">OIL.T</div>
-          <div class="sub">EXT</div>
-          <div class="col" id="otmp-col"></div>
-          <div class="val" id="otmp-v">095</div>
-          <div class="unit">°C</div>
-        </div>
-        <div class="vbar">
-          <div class="lbl">BATT</div>
-          <div class="sub">0x0C</div>
-          <div class="col" id="batt-col"></div>
-          <div class="val" id="batt-v">14.2</div>
-          <div class="unit">VOLT</div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ===== FOOTER STRIP ===== -->
     <div class="ftr">
-      <div class="ftr-cell">
-        <div class="ftr-head">
-          <span>THROTTLE.POS</span>
-          <span><span class="v" id="tps-v">000</span><span class="u">%</span></span>
+
+      <div class="ftr-cell tps-cell">
+        <div class="tps-top">
+          <span class="ftr-lbl">THROTTLE</span>
+          <span class="v" id="tps-v">000%</span>
         </div>
-        <div class="hbar" id="tps-bar"></div>
+        <div class="tps-bar-h" id="tps-bar"></div>
       </div>
 
-      <div class="ftr-cell ftr-stat">
-        <div class="lbl">OIL.PSI</div>
-        <div class="v" id="oilp-v">5.2</div>
-        <div class="u">BAR</div>
+      <div class="ftr-cell">
+        <div class="ftr-lbl">OIL.PSI</div>
+        <div class="ftr-val" id="oilp-v">5.2<span class="u">BAR</span></div>
       </div>
 
-      <div class="ftr-cell ftr-stat">
-        <div class="lbl">MAP</div>
-        <div class="v" id="map-v">-0.4</div>
-        <div class="u">BAR</div>
+      <div class="ftr-cell">
+        <div class="ftr-lbl">MAP/BST</div>
+        <div class="ftr-val" id="map-v">-0.4<span class="u">BAR</span></div>
       </div>
 
-      <div class="ftr-cell ftr-stat">
-        <div class="lbl">AFR</div>
-        <div class="v" id="afr-v">14.7</div>
-        <div class="u" id="afr-state">STOICH</div>
+      <div class="ftr-cell">
+        <div class="ftr-lbl">AFR</div>
+        <div class="ftr-val" id="afr-v">14.7</div>
       </div>
 
-      <div class="ftr-cell ftr-stat">
-        <div class="lbl">IGN.ADV</div>
-        <div class="v" id="ign-v">14</div>
-        <div class="u">° BTDC</div>
+      <div class="ftr-cell">
+        <div class="ftr-lbl">IGN.ADV</div>
+        <div class="ftr-val" id="ign-v">14<span class="u">°</span></div>
       </div>
+
     </div>
 
   </div>
 </div>
 
-<!-- ===== SIM PANEL ===== -->
 <div class="sim hidden">
   <div class="sim-head">
     <span>// SIM.CTRL</span>
@@ -865,6 +869,7 @@
   <input type="range" id="s-map" min="-10" max="10" value="-4">
 
   <div class="mode-btns">
+    <button class="mode" data-mode="live">LIVE</button>
     <button class="mode" data-mode="manual">MANUAL</button>
     <button class="mode active" data-mode="demo">DEMO.LAP</button>
     <button class="mode" data-mode="idle">IDLE</button>
@@ -872,30 +877,19 @@
 </div>
 
 <script>
-  // ===== CONFIG =====
   const CFG = {
     rpmMax: 8000,
     rpmRedline: 6800,
-    tachSegs: 48,
-    tpsSegs: 28,
-    vbarSegs: 14,
+    tachSegs: 60,
+    shiftSegs: 16,
+    vbarSegs: 18,
+    tpsSegs: 40,
   };
 
-  // ===== DATA =====
   const data = {
-    rpm: 800,
-    speed: 0,
-    coolant: 82,
-    oilTemp: 95,
-    oilPressure: 5.2,
-    map: -0.4,
-    afr: 14.7,
-    battery: 14.2,
-    tps: 0,
-    ignAdv: 14,
-    maf: 1.42,
-    injPW: 3.2,
-    gear: 'N',
+    rpm: 800, speed: 0, coolant: 82, oilTemp: 95, oilPressure: 5.2,
+    map: -0.4, afr: 14.7, battery: 14.2, tps: 0, ignAdv: 14,
+    maf: 1.42, injPW: 3.2, gear: 'N',
   };
 
   let mode = 'demo';
@@ -907,9 +901,8 @@
   let zeroToHundredTime = null;
   let lastUpdate = performance.now();
 
-  // ===== BOOT SEQUENCE =====
   const bootLines = [
-    { t: '> CONSULT.SYS v2.7.0 boot...', cls: 'dim', delay: 60 },
+    { t: '> CONSULT.SYS v2.6.1 boot...', cls: 'dim', delay: 60 },
     { t: '> initializing K-LINE @ 9600 baud', cls: 'dim', delay: 80 },
     { t: '> handshake ECU.................[<span class="ok">OK</span>]', cls: '', delay: 200 },
     { t: '> identify part# 23710-CD040..[<span class="ok">OK</span>]', cls: '', delay: 80 },
@@ -937,81 +930,54 @@
     document.getElementById('boot').classList.add('done');
   }
 
-  // ===== BUILD SEGMENTED ELEMENTS =====
-  (function buildTach() {
-    const row = document.getElementById('tach-segs');
-    let html = '';
-    for (let i = 0; i < CFG.tachSegs; i++) html += '<div class="tseg" data-i="' + i + '"></div>';
-    row.innerHTML = html;
-
-    const ticks = document.getElementById('tach-ticks');
-    let tHTML = '';
-    for (let i = 0; i <= 8; i++) {
-      const cls = i >= 7 ? 'rl' : '';
-      tHTML += '<span class="' + cls + '">' + i + '</span>';
-    }
-    ticks.innerHTML = tHTML;
-  })();
-
-  (function buildVBars() {
-    ['cool-col', 'otmp-col', 'batt-col'].forEach(id => {
-      const c = document.getElementById(id);
-      let html = '';
-      for (let i = 0; i < CFG.vbarSegs; i++) html += '<div class="vseg"></div>';
-      c.innerHTML = html;
-    });
-  })();
-
-  (function buildTpsBar() {
-    const b = document.getElementById('tps-bar');
-    let html = '';
-    for (let i = 0; i < CFG.tpsSegs; i++) html += '<div class="hseg"></div>';
-    b.innerHTML = html;
-  })();
-
-  // ===== HELPERS =====
-  function fillSegs(container, count, pct, warnFrac, dangerFrac) {
-    const segs = container.children;
-    const lit = Math.round(pct * count);
+  function buildSegs(container, count, className) {
+    container.innerHTML = '';
     for (let i = 0; i < count; i++) {
-      const s = segs[i];
-      if (!s) continue;
-      s.classList.remove('on', 'warn', 'danger');
-      if (i < lit) {
-        const f = (i + 1) / count;
-        s.classList.add('on');
-        if (dangerFrac != null && f > dangerFrac) s.classList.add('danger');
-        else if (warnFrac != null && f > warnFrac) s.classList.add('warn');
-      }
+      const s = document.createElement('div');
+      s.className = className;
+      container.appendChild(s);
     }
   }
 
-  function setVal(el, text, level) {
-    el.textContent = text;
-    el.classList.remove('warn', 'danger');
-    if (level === 'danger') el.classList.add('danger');
-    else if (level === 'warn') el.classList.add('warn');
-  }
+  buildSegs(document.getElementById('tach-bar'), CFG.tachSegs, 'tach-seg');
+  buildSegs(document.getElementById('shift-strip'), CFG.shiftSegs, 'shift-pip');
+  buildSegs(document.getElementById('coolant-bar'), CFG.vbarSegs, 'vbar-cell');
+  buildSegs(document.getElementById('oiltemp-bar'), CFG.vbarSegs, 'vbar-cell');
+  buildSegs(document.getElementById('batt-bar'), CFG.vbarSegs, 'vbar-cell');
+  buildSegs(document.getElementById('tps-bar'), CFG.tpsSegs, 'seg');
 
-  function levelFor(value, warnAt, dangerAt) {
-    if (value >= dangerAt) return 'danger';
-    if (value >= warnAt) return 'warn';
-    return null;
-  }
-
-  function lerp(a, b, t) { return a + (b - a) * t; }
-
-  // ===== RENDER =====
   function render() {
-    // RPM / tach bar
+    // TACH
     const rpmPct = Math.min(1, Math.max(0, data.rpm / CFG.rpmMax));
-    const warnFrac = 0.78;
-    const dangerFrac = CFG.rpmRedline / CFG.rpmMax;
-    fillSegs(document.getElementById('tach-segs'), CFG.tachSegs, rpmPct, warnFrac, dangerFrac);
-    const rpmLvl = data.rpm >= CFG.rpmRedline ? 'danger' : data.rpm >= CFG.rpmMax * 0.78 ? 'warn' : null;
-    setVal(document.getElementById('rpm-v'), String(Math.round(data.rpm)).padStart(4, '0'), rpmLvl);
+    const tachSegs = document.querySelectorAll('#tach-bar .tach-seg');
+    const litTach = Math.round(rpmPct * CFG.tachSegs);
+    const redlineSeg = Math.round((CFG.rpmRedline / CFG.rpmMax) * CFG.tachSegs);
+    const warnSeg = Math.round(0.78 * CFG.tachSegs);
+    tachSegs.forEach((s, i) => {
+      s.classList.remove('on', 'warn', 'danger');
+      if (i < litTach) {
+        s.classList.add('on');
+        if (i >= redlineSeg) s.classList.add('danger');
+        else if (i >= warnSeg) s.classList.add('warn');
+      }
+    });
+    document.getElementById('tach-rpm').innerHTML =
+      String(Math.round(data.rpm)).padStart(4, '0') + '<span class="unit">RPM</span>';
 
-    // Gear
+    // SHIFT pips
+    const shiftPips = document.querySelectorAll('#shift-strip .shift-pip');
+    const litShift = Math.round(rpmPct * CFG.shiftSegs);
+    shiftPips.forEach((s, i) => {
+      s.classList.remove('on', 'warn', 'danger');
+      if (i < litShift) {
+        s.classList.add('on');
+        const segPct = i / CFG.shiftSegs;
+        if (segPct >= CFG.rpmRedline / CFG.rpmMax) s.classList.add('danger');
+        else if (segPct >= 0.78) s.classList.add('warn');
+      }
+    });
+
+    // GEAR
     const gearEl = document.getElementById('gear');
     let gear = 'N';
     if (data.speed > 2 && data.rpm > 1000) {
@@ -1028,7 +994,7 @@
     gearEl.textContent = gear;
     gearEl.classList.toggle('redline', data.rpm > CFG.rpmRedline);
 
-    // Speed
+    // SPEED
     document.getElementById('speed').textContent = String(Math.round(data.speed)).padStart(3, '0');
     if (data.speed > peakSpeed) peakSpeed = data.speed;
     document.getElementById('peak').textContent = String(Math.round(peakSpeed)).padStart(3, '0');
@@ -1038,10 +1004,7 @@
       zeroToHundredStart = performance.now();
       zeroToHundredTime = null;
     }
-    if (data.speed < 1) {
-      zeroToHundredStart = null;
-      zeroToHundredTime = null;
-    }
+    if (data.speed < 1) { zeroToHundredStart = null; zeroToHundredTime = null; }
     if (data.speed >= 100 && zeroToHundredStart && zeroToHundredTime === null) {
       zeroToHundredTime = (performance.now() - zeroToHundredStart) / 1000;
     }
@@ -1052,88 +1015,63 @@
     } else {
       document.getElementById('t-060').textContent = '--.--';
     }
+
+    // COOLANT
+    updateVBar('coolant-bar', data.coolant, 40, 125, [95, 105]);
+    const cv = document.getElementById('coolant-v');
+    cv.innerHTML = String(Math.round(data.coolant)).padStart(3, '0') + '<span class="unit">°C</span>';
+    cv.className = 'vbar-value' + (data.coolant > 105 ? ' danger' : data.coolant > 95 ? ' warn' : '');
+
+    // OIL TEMP
+    updateVBar('oiltemp-bar', data.oilTemp, 40, 145, [115, 130]);
+    const otv = document.getElementById('oiltemp-v');
+    otv.innerHTML = String(Math.round(data.oilTemp)).padStart(3, '0') + '<span class="unit">°C</span>';
+    otv.className = 'vbar-value' + (data.oilTemp > 130 ? ' danger' : data.oilTemp > 115 ? ' warn' : '');
+
+    // BATTERY
+    updateVBar('batt-bar', data.battery, 11, 15, [13.0, 14.8]);
+    const bv = document.getElementById('batt-v');
+    bv.innerHTML = data.battery.toFixed(1) + '<span class="unit">V</span>';
+    bv.className = 'vbar-value' + (data.battery < 11.5 ? ' danger' : (data.battery < 12.5 || data.battery > 14.9) ? ' warn' : '');
+
+    // THROTTLE
+    document.getElementById('tps-v').textContent = String(Math.round(data.tps)).padStart(3, '0') + '%';
+    const tpsSegs = document.querySelectorAll('#tps-bar .seg');
+    const litTps = Math.round((data.tps / 100) * CFG.tpsSegs);
+    tpsSegs.forEach((s, i) => {
+      s.classList.remove('on', 'warn', 'danger');
+      if (i < litTps) {
+        s.classList.add('on');
+        const pct = i / CFG.tpsSegs;
+        if (pct > 0.85) s.classList.add('danger');
+        else if (pct > 0.7) s.classList.add('warn');
+      }
+    });
+
+    // FOOTER
+    document.getElementById('oilp-v').innerHTML =
+      data.oilPressure.toFixed(1) + '<span class="u">BAR</span>';
+    document.getElementById('map-v').innerHTML =
+      (data.map >= 0 ? '+' : '') + data.map.toFixed(1) + '<span class="u">BAR</span>';
+    document.getElementById('afr-v').textContent = data.afr.toFixed(1);
+    document.getElementById('ign-v').innerHTML = data.ignAdv.toFixed(0) + '<span class="u">°</span>';
+
+    const afrEl = document.getElementById('afr-v');
+    afrEl.className = 'ftr-val' + ((data.afr < 12.0 || data.afr > 16) ? ' warn' : '');
+
+    // TRIP
     document.getElementById('trip').textContent = tripDist.toFixed(1);
+    const avg = totalDist / (demoTime / 3600 || 1);
+    document.getElementById('avg').textContent = String(Math.min(999, Math.round(avg))).padStart(3, '0');
 
-    // Vertical bars: COOLANT (40–125, warn 95, danger 105)
-    {
-      const min = 40, max = 125;
-      const pct = Math.min(1, Math.max(0, (data.coolant - min) / (max - min)));
-      const wf = (95 - min) / (max - min);
-      const df = (105 - min) / (max - min);
-      fillSegs(document.getElementById('cool-col'), CFG.vbarSegs, pct, wf, df);
-      setVal(document.getElementById('cool-v'), String(Math.round(data.coolant)).padStart(3, '0'),
-        data.coolant > 105 ? 'danger' : data.coolant > 95 ? 'warn' : null);
-    }
-
-    // Vertical bars: OIL.TMP (40–145, warn 115, danger 130)
-    {
-      const min = 40, max = 145;
-      const pct = Math.min(1, Math.max(0, (data.oilTemp - min) / (max - min)));
-      const wf = (115 - min) / (max - min);
-      const df = (130 - min) / (max - min);
-      fillSegs(document.getElementById('otmp-col'), CFG.vbarSegs, pct, wf, df);
-      setVal(document.getElementById('otmp-v'), String(Math.round(data.oilTemp)).padStart(3, '0'),
-        data.oilTemp > 130 ? 'danger' : data.oilTemp > 115 ? 'warn' : null);
-    }
-
-    // Vertical bars: BATTERY (11–15, normal band 12.5–14.8)
-    {
-      const min = 11, max = 15;
-      const pct = Math.min(1, Math.max(0, (data.battery - min) / (max - min)));
-      // Battery is the inverse — flag low or extreme high
-      let lvl = null;
-      if (data.battery < 11.5) lvl = 'danger';
-      else if (data.battery < 12.5 || data.battery > 14.9) lvl = 'warn';
-      // For the bar, warn at top (>14.8) only
-      const wf = (14.8 - min) / (max - min);
-      fillSegs(document.getElementById('batt-col'), CFG.vbarSegs, pct, wf, 1.01);
-      setVal(document.getElementById('batt-v'), data.battery.toFixed(1), lvl);
-    }
-
-    // Footer: THROTTLE (horizontal bar)
-    {
-      const pct = Math.min(1, Math.max(0, data.tps / 100));
-      fillSegs(document.getElementById('tps-bar'), CFG.tpsSegs, pct, 0.7, 0.9);
-      setVal(document.getElementById('tps-v'), String(Math.round(data.tps)).padStart(3, '0'),
-        data.tps > 90 ? 'danger' : data.tps > 70 ? 'warn' : null);
-    }
-
-    // Footer: OIL.PSI
-    {
-      const lvl = data.oilPressure < 0.5 && data.rpm > 500 ? 'danger'
-                : data.oilPressure < 1.5 && data.rpm > 500 ? 'warn' : null;
-      setVal(document.getElementById('oilp-v'), data.oilPressure.toFixed(1), lvl);
-    }
-
-    // Footer: MAP
-    {
-      const lvl = data.map > 0.5 ? 'warn' : null;
-      setVal(document.getElementById('map-v'), (data.map >= 0 ? '+' : '') + data.map.toFixed(1), lvl);
-    }
-
-    // Footer: AFR
-    {
-      let afrState = 'STOICH', lvl = null;
-      if (data.afr < 12.5) { afrState = 'RICH'; lvl = 'warn'; }
-      else if (data.afr < 14) { afrState = 'PWR'; }
-      else if (data.afr > 16) { afrState = 'LEAN'; lvl = 'danger'; }
-      else if (data.afr > 15.5) { afrState = 'LEAN'; lvl = 'warn'; }
-      setVal(document.getElementById('afr-v'), data.afr.toFixed(1), lvl);
-      document.getElementById('afr-state').textContent = afrState;
-    }
-
-    // Footer: IGN.ADV
-    setVal(document.getElementById('ign-v'), Math.round(data.ignAdv), null);
-
-    // Warnings
+    // WARNINGS
     setWarn('w-eng', false);
     setWarn('w-oil', data.oilPressure < 1.5 && data.rpm > 500, data.oilPressure < 0.5 && data.rpm > 500);
     setWarn('w-tmp', data.coolant > 105, data.coolant > 115);
     setWarn('w-bat', data.battery < 12.5 || data.battery > 14.9, data.battery < 11.5);
-    setWarn('w-abs', false);
     setWarn('w-knk', false);
 
-    // Clock
+    // CLOCK
     const now = new Date();
     document.getElementById('time').textContent =
       String(now.getHours()).padStart(2, '0') + ':' +
@@ -1148,10 +1086,24 @@
     else if (on) el.classList.add('on');
   }
 
-  // ===== DEMO / IDLE LOOPS =====
+  function updateVBar(id, val, min, max, thresholds) {
+    const segs = document.querySelectorAll('#' + id + ' .vbar-cell');
+    const pct = Math.min(1, Math.max(0, (val - min) / (max - min)));
+    const lit = Math.round(pct * segs.length);
+    segs.forEach((s, i) => {
+      s.classList.remove('on', 'warn', 'danger');
+      const segVal = min + (max - min) * (i / segs.length);
+      if (i < lit) {
+        s.classList.add('on');
+        if (thresholds && segVal > thresholds[1]) s.classList.add('danger');
+        else if (thresholds && segVal > thresholds[0]) s.classList.add('warn');
+      }
+    });
+  }
+
   function demoStep(dt) {
     const t = demoTime;
-    const cycle = t % 30;
+    const cycle = t % 30.0;
 
     if (cycle < 8) {
       data.rpm = lerp(data.rpm, 1500 + (cycle / 8) * 5500, 0.04);
@@ -1201,6 +1153,8 @@
     data.injPW = lerp(data.injPW, 2.0, 0.1);
   }
 
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
   function loop(now) {
     const dt = (now - lastUpdate) / 1000;
     lastUpdate = now;
@@ -1216,7 +1170,6 @@
     requestAnimationFrame(loop);
   }
 
-  // ===== SIM SLIDERS =====
   const sliders = [
     { id: 's-rpm', key: 'rpm', scale: 1, valEl: 's-rpm-v' },
     { id: 's-speed', key: 'speed', scale: 1, valEl: 's-speed-v' },
@@ -1232,41 +1185,59 @@
   sliders.forEach(s => {
     const el = document.getElementById(s.id);
     const valEl = document.getElementById(s.valEl);
-    const update = () => {
+    const updateLabel = () => {
       const v = parseFloat(el.value) * s.scale;
-      if (mode === 'manual') data[s.key] = v;
       valEl.textContent = s.fmt ? s.fmt(v) : Math.round(v);
     };
-    el.addEventListener('input', update);
-    update();
+    const onUserInput = () => {
+      const v = parseFloat(el.value) * s.scale;
+      valEl.textContent = s.fmt ? s.fmt(v) : Math.round(v);
+      if (mode !== 'manual') {
+        sliders.forEach(other => {
+          const ov = parseFloat(document.getElementById(other.id).value) * other.scale;
+          data[other.key] = ov;
+        });
+        setMode('manual');
+      } else {
+        data[s.key] = v;
+      }
+    };
+    el.addEventListener('input', onUserInput);
+    updateLabel();
   });
+
+  function setMode(newMode) {
+    mode = newMode;
+    document.querySelectorAll('.sim button.mode').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === newMode);
+    });
+    const btn = document.querySelector(`.sim button.mode[data-mode="${newMode}"]`);
+    if (btn) document.getElementById('sim-mode-label').textContent = btn.textContent;
+  }
 
   document.querySelectorAll('.sim button.mode').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.sim button.mode').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      mode = btn.dataset.mode;
-      document.getElementById('sim-mode-label').textContent = btn.textContent;
-      if (mode === 'manual') {
+      const newMode = btn.dataset.mode;
+      if (newMode === 'manual') {
         sliders.forEach(s => {
           const v = parseFloat(document.getElementById(s.id).value) * s.scale;
           data[s.key] = v;
         });
       }
-      if (mode === 'demo') {
+      if (newMode === 'demo') {
         peakSpeed = 0;
         tripDist = 0;
         totalDist = 0;
         demoTime = 0;
       }
+      setMode(newMode);
     });
   });
 
-  // Start boot then loop
   runBoot();
   requestAnimationFrame(loop);
 
-  // ===== LIVE TELEMETRY WEBSOCKET =====
+  // ===== WEBSOCKET =====
   let wsConnected = false;
   let wsLastMessage = 0;
   let wsRetryDelay = 1000;
@@ -1277,17 +1248,13 @@
     const url = `${proto}//${host}/ws`;
 
     let ws;
-    try {
-      ws = new WebSocket(url);
-    } catch (e) {
-      scheduleReconnect();
-      return;
-    }
+    try { ws = new WebSocket(url); }
+    catch (e) { scheduleReconnect(); return; }
 
     ws.onopen = () => {
       wsConnected = true;
       wsRetryDelay = 1000;
-      if (mode === 'demo') mode = 'live';
+      if (mode === 'demo') setMode('live');
       document.getElementById('link-status').textContent = 'LIVE';
     };
 
@@ -1300,23 +1267,22 @@
             m === 'consult' ? 'ECU' : 'SIM';
           return;
         }
+        wsLastMessage = performance.now();
+        if (mode !== 'live') return;
         for (const k of Object.keys(payload)) {
           if (k in data) data[k] = payload[k];
         }
-        wsLastMessage = performance.now();
-      } catch (err) {}
+      } catch (err) { /* ignore */ }
     };
 
     ws.onclose = () => {
       wsConnected = false;
       document.getElementById('link-status').textContent = 'OFFLINE';
-      if (mode === 'live') mode = 'demo';
+      if (mode === 'live') setMode('demo');
       scheduleReconnect();
     };
 
-    ws.onerror = () => {
-      try { ws.close(); } catch (e) {}
-    };
+    ws.onerror = () => { try { ws.close(); } catch (e) {} };
   }
 
   function scheduleReconnect() {
