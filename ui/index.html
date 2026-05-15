@@ -6,7 +6,7 @@
 <title>350Z.DGN // CONSULT-II // VQ35DE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg-deep: #000300;
@@ -335,26 +335,99 @@
     grid-template-rows: auto 1fr auto;
     align-items: center;
     justify-items: center;
+    gap: 4px;
+    padding-bottom: 6px;
   }
 
-  .gear-huge {
-    font-family: 'VT323', monospace;
-    font-size: 220px;
-    line-height: 0.78;
+  .gear-frame {
+    position: relative;
+    width: 100%;
+    max-width: 220px;
+    aspect-ratio: 3 / 4;
+    border: 2px solid var(--phos);
+    background: #061a0a;
+    overflow: hidden;
+    box-shadow: 0 0 6px var(--phos), inset 0 0 14px rgba(0, 0, 0, 0.7);
+    display: grid;
+    place-items: center;
+    align-self: center;
+    justify-self: center;
+  }
+
+  .gear-frame img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    /* Red-phosphor filter — desaturate, sepia, then push hue to red */
+    filter: grayscale(1) sepia(0.85) hue-rotate(-30deg) contrast(1.08) brightness(0.95) saturate(1.6);
+    mix-blend-mode: screen;
+  }
+
+  /* Slot VI is pre-tinted red; let it bloom instead of recoloring */
+  .gear-frame img.redslot {
+    filter: contrast(1.15) brightness(1.05) saturate(1.4);
+  }
+
+  .gear-frame .fallback {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 180px;
+    line-height: 0.9;
     color: var(--phos-bright);
-    text-shadow: var(--glow-huge);
-    letter-spacing: -8px;
+    text-shadow: 0 0 4px var(--phos-bright), 0 0 14px var(--phos), 0 0 26px var(--phos-mid);
+    display: none;
+    user-select: none;
   }
 
-  .gear-huge.redline {
+  .gear-frame .badge {
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
+    transform: translateX(-50%);
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 5px;
+    padding: 2px 12px 1px;
+    color: var(--phos-bright);
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid var(--phos);
+    text-shadow: 0 0 4px var(--phos), 0 0 10px var(--phos-mid);
+    z-index: 2;
+  }
+
+  .gear-frame.no-photo { background: #001a08; }
+  .gear-frame.no-photo img { display: none; }
+  .gear-frame.no-photo .badge { display: none; }
+  .gear-frame.no-photo .fallback { display: block; }
+
+  .gear-frame.redline {
+    border-color: var(--red);
+    box-shadow: 0 0 10px var(--red), 0 0 22px var(--red-dim), inset 0 0 14px rgba(0,0,0,0.7);
+    animation: gear-frame-pulse 0.4s ease-in-out infinite;
+  }
+  .gear-frame.redline .badge {
+    color: #fff;
+    border-color: var(--red);
+    text-shadow: 0 0 4px var(--red), 0 0 12px var(--red);
+  }
+  .gear-frame.redline .fallback {
     color: var(--red);
-    text-shadow: 0 0 4px var(--red), 0 0 14px var(--red), 0 0 28px var(--red);
-    animation: gear-pulse 0.4s ease-in-out infinite;
+    text-shadow: 0 0 4px var(--red), 0 0 16px var(--red), 0 0 30px var(--red);
   }
 
-  @keyframes gear-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+  @keyframes gear-frame-pulse {
+    0%, 100% {
+      border-color: var(--red);
+      box-shadow: 0 0 10px var(--red), 0 0 22px var(--red-dim), inset 0 0 14px rgba(0,0,0,0.7);
+    }
+    50% {
+      border-color: #ffb0a0;
+      box-shadow: 0 0 4px var(--red), 0 0 12px var(--red), inset 0 0 14px rgba(0,0,0,0.7);
+    }
   }
 
   .gear-shift-row {
@@ -775,7 +848,11 @@
 
         <div class="box gear-panel">
           <div class="box-label">&lt; GEAR &gt;</div>
-          <div class="gear-huge" id="gear">N</div>
+          <div class="gear-frame no-photo" id="gear-frame">
+            <img id="gear-img" alt="">
+            <span class="fallback" id="gear-fallback">N</span>
+            <span class="badge" id="gear-badge">N</span>
+          </div>
           <div class="gear-shift-row" id="shift-strip"></div>
         </div>
 
@@ -978,7 +1055,12 @@
     });
 
     // GEAR
-    const gearEl = document.getElementById('gear');
+    const gearFrame = document.getElementById('gear-frame');
+    const gearImg = document.getElementById('gear-img');
+    const gearFallback = document.getElementById('gear-fallback');
+    const gearBadge = document.getElementById('gear-badge');
+    const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+
     let gear = 'N';
     if (data.speed > 2 && data.rpm > 1000) {
       const ratio = data.speed / data.rpm * 1000;
@@ -991,8 +1073,23 @@
     } else if (data.speed > 2) {
       gear = '-';
     }
-    gearEl.textContent = gear;
-    gearEl.classList.toggle('redline', data.rpm > CFG.rpmRedline);
+
+    const isNum = /^[1-6]$/.test(gear);
+    if (isNum) {
+      const n = parseInt(gear, 10);
+      gearFrame.classList.remove('no-photo');
+      const newSrc = `img/gears/${n}.jpg`;
+      if (!gearImg.getAttribute('src') || !gearImg.src.endsWith(newSrc)) {
+        gearImg.src = newSrc;
+      }
+      gearImg.classList.toggle('redslot', n === 6);
+      gearBadge.textContent = ROMAN[n - 1];
+    } else {
+      gearFrame.classList.add('no-photo');
+      gearFallback.textContent = gear;
+    }
+
+    gearFrame.classList.toggle('redline', data.rpm > CFG.rpmRedline);
 
     // SPEED
     document.getElementById('speed').textContent = String(Math.round(data.speed)).padStart(3, '0');
